@@ -1,0 +1,2191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amana's Birthday Bash — RSVP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blush-cream:  #FDF4F0;
+      --soft-pink:    #F5CECE;
+      --carnation:    #E8A3A3;
+      --deep-rose:    #C97080;
+      --dusty-rose:   #D4848E;
+      --warm-white:   #FFFAF7;
+      --petal-gold:   #C9957A;
+      --leaf-green:   #7A9E7E;
+      --leaf-mid:     #9DBE9E;
+      --leaf-light:   #C5DEC2;
+      --text-dark:    #5A3A3A;
+      --text-mid:     #8A5A5A;
+      --text-light:   #C4939E;
+      --cream-border: #EEDDD8;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--blush-cream);
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    /* ── FLOATING AMBIENT FLOWERS — hero only ──── */
+    .ambient-float {
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      animation: floatDrift linear infinite;
+    }
+    /* left strip: 0–9vw | right strip: 91–100vw */
+    .ambient-float.side-left  { left: 0;   width: 9vw;  max-width: 72px; }
+    .ambient-float.side-right { right: 0;  width: 9vw;  max-width: 72px; }
+
+    @keyframes floatDrift {
+      0%   { opacity: 0; transform: translateY(0)      rotate(0deg)  scale(0.85); }
+      12%  { opacity: 0.60; }
+      88%  { opacity: 0.45; }
+      100% { opacity: 0; transform: translateY(-105vh) rotate(38deg) scale(1.05); }
+    }
+
+    /* ── STARGAZER LILY BORDER ACCENTS (hero only, animated) ── */
+    .lily-border {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+      animation: lilyPulse ease-in-out infinite alternate;
+    }
+    @keyframes lilyPulse {
+      0%   { opacity: 0.55; transform: scale(1)    rotate(0deg); }
+      100% { opacity: 0.80; transform: scale(1.06) rotate(4deg); }
+    }
+
+    /* ── PASSCODE ───────────────────────────────────────── */
+    #passcode-screen {
+      position: fixed; inset: 0; z-index: 1000;
+      background: var(--warm-white);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      transition: opacity 0.8s ease;
+      overflow: hidden;
+    }
+    #passcode-screen.hidden { opacity: 0; pointer-events: none; }
+
+    /* passcode background petals */
+    .pc-petal {
+      position: absolute;
+      opacity: 0;
+      animation: pcPetalFloat linear infinite;
+      pointer-events: none;
+    }
+    @keyframes pcPetalFloat {
+      0%   { opacity: 0; transform: translateY(110vh) rotate(0deg); }
+      15%  { opacity: 0.5; }
+      85%  { opacity: 0.35; }
+      100% { opacity: 0; transform: translateY(-10vh) rotate(60deg); }
+    }
+
+    .passcode-card {
+      text-align: center;
+      padding: 56px 40px 48px;
+      max-width: 380px;
+      width: 90%;
+      position: relative;
+      z-index: 2;
+      background: rgba(255,250,247,0.88);
+      border: 1px solid var(--cream-border);
+      border-radius: 32px;
+      box-shadow: 0 12px 50px rgba(201,112,128,0.12);
+      backdrop-filter: blur(6px);
+    }
+    .passcode-card h2 {
+      font-family: 'Cormorant Garant', serif;
+      font-size: 2.1rem; font-weight: 400;
+      color: var(--text-dark); margin-bottom: 6px;
+    }
+    .passcode-card > p {
+      font-size: 0.88rem; color: var(--text-mid);
+      font-weight: 300; margin-bottom: 28px;
+      letter-spacing: 0.05em;
+    }
+    .pc-input {
+      width: 100%; padding: 14px 20px;
+      border: 1.5px solid var(--cream-border);
+      border-radius: 50px;
+      font-family: 'Lato', sans-serif; font-size: 1rem;
+      background: #fff; color: var(--text-dark);
+      text-align: center; letter-spacing: 0.3em;
+      outline: none; transition: border-color 0.3s;
+      margin-bottom: 14px;
+    }
+    .pc-input:focus { border-color: var(--carnation); }
+    .pc-input.shake {
+      animation: shake 0.4s ease;
+      border-color: #e07070 !important;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+    .pc-error { color: #c97070; font-size: 0.82rem; min-height: 18px; margin-bottom: 10px; }
+
+    /* ── BUTTONS ────────────────────────────────────────── */
+    .btn {
+      display: inline-block; padding: 14px 36px;
+      border-radius: 50px; font-family: 'Lato', sans-serif;
+      font-size: 0.85rem; letter-spacing: 0.15em; font-weight: 700;
+      text-transform: uppercase; cursor: pointer; border: none;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      text-decoration: none; touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-rose {
+      background: linear-gradient(135deg, var(--deep-rose), var(--dusty-rose));
+      color: #fff; box-shadow: 0 6px 22px rgba(201,112,128,0.30);
+    }
+    .btn-rose:hover { box-shadow: 0 10px 30px rgba(201,112,128,0.40); }
+    .btn-full { width: 100%; text-align: center; }
+
+    /* ── FLORAL DIVIDER ─────────────────────────────────── */
+    .floral-divider {
+      width: 100%; display: flex;
+      align-items: center; justify-content: center; margin: 8px 0;
+    }
+    .floral-divider svg { width: 320px; max-width: 88%; }
+
+    /* ── HERO ───────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 80px 24px 60px;
+      position: relative; overflow: hidden;
+      background:
+        radial-gradient(ellipse at 15% 15%, rgba(245,180,190,0.25) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(232,163,163,0.20) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 50%, rgba(255,240,245,0.30) 0%, transparent 70%),
+        var(--warm-white);
+    }
+
+    /* corner bouquet clusters */
+    .hero-corner { position: absolute; pointer-events: none; }
+    .hero-corner.tl { top: -8px; left: -8px; width: 260px; }
+    .hero-corner.tr { top: -8px; right: -8px; width: 260px; transform: scaleX(-1); }
+    .hero-corner.bl { bottom: -8px; left: -8px; width: 200px; transform: scaleY(-1); }
+    .hero-corner.br { bottom: -8px; right: -8px; width: 200px; transform: scale(-1,-1); }
+
+    /* floating petal inside hero */
+    .hero-float {
+      position: absolute; pointer-events: none;
+      animation: heroPetalFloat ease-in-out infinite;
+      opacity: 0;
+    }
+    @keyframes heroPetalFloat {
+      0%   { opacity: 0; transform: translateY(30px) rotate(0deg); }
+      20%  { opacity: 0.7; }
+      80%  { opacity: 0.5; }
+      100% { opacity: 0; transform: translateY(-60px) rotate(25deg); }
+    }
+
+    .hero-inner { position: relative; z-index: 2; max-width: 620px; }
+    .eyebrow {
+      font-family: 'Lato', sans-serif; font-size: 0.78rem;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--petal-gold); font-weight: 400; margin-bottom: 18px;
+      opacity: 0; animation: fadeUp 1s ease 0.3s forwards;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garant', serif;
+      font-size: clamp(2.8rem, 9vw, 5.2rem);
+      font-weight: 300; line-height: 1.1;
+      color: var(--text-dark); margin-bottom: 12px;
+      opacity: 0; animation: fadeUp 1s ease 0.55s forwards;
+    }
+    .hero-title em { font-style: italic; color: var(--deep-rose); }
+    .hero-subtitle {
+      font-family: 'Cormorant Garant', serif;
+      font-size: clamp(1.05rem, 3vw, 1.45rem);
+      font-weight: 300; color: var(--text-mid);
+      letter-spacing: 0.06em; margin-bottom: 36px;
+      opacity: 0; animation: fadeUp 1s ease 0.8s forwards;
+    }
+    .hero-cta { opacity: 0; animation: fadeUp 1s ease 1s forwards; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTION COMMONS ────────────────────────────────── */
+    section { padding: 70px 24px; position: relative; overflow: hidden; }
+    .section-label {
+      font-size: 0.72rem; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--petal-gold);
+      font-weight: 400; margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: 'Cormorant Garant', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400; color: var(--text-dark);
+      margin-bottom: 32px; line-height: 1.2;
+    }
+
+    /* section background floral accents */
+    .sec-floral-l, .sec-floral-r {
+      position: absolute; pointer-events: none; opacity: 0.45;
+      top: 50%; transform: translateY(-50%);
+    }
+    .sec-floral-l { left: -30px; width: 160px; }
+    .sec-floral-r { right: -30px; width: 160px; transform: translateY(-50%) scaleX(-1); }
+
+    /* ── EVENT DETAILS ───────────────────────────────────── */
+    #details { background: var(--warm-white); text-align: center; }
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px; max-width: 740px; margin: 0 auto;
+    }
+    .detail-card {
+      background: #fff; border: 1px solid var(--cream-border);
+      border-radius: 22px; padding: 34px 24px;
+      box-shadow: 0 4px 22px rgba(201,112,128,0.08);
+      transition: transform 0.3s ease;
+    }
+    .detail-card:hover { transform: translateY(-5px); }
+    .detail-icon { font-size: 1.7rem; margin-bottom: 12px; display: block; }
+    .detail-card h3 {
+      font-family: 'Cormorant Garant', serif; font-size: 1.1rem;
+      font-weight: 500; color: var(--deep-rose); margin-bottom: 6px;
+    }
+    .detail-card p { font-size: 0.9rem; color: var(--text-mid); line-height: 1.65; font-weight: 300; }
+
+    /* ── RSVP ────────────────────────────────────────────── */
+    #rsvp { background: var(--blush-cream); text-align: center; }
+    .rsvp-card {
+      background: #fff; border: 1px solid var(--cream-border);
+      border-radius: 28px; padding: 48px 40px;
+      max-width: 560px; margin: 0 auto;
+      box-shadow: 0 8px 44px rgba(201,112,128,0.11);
+    }
+    .form-group { text-align: left; margin-bottom: 22px; }
+    .form-group label {
+      display: block; font-size: 0.8rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-mid);
+      margin-bottom: 8px; font-weight: 400;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 13px 18px;
+      border: 1.5px solid var(--cream-border); border-radius: 14px;
+      font-family: 'Lato', sans-serif; font-size: 16px;
+      color: var(--text-dark); background: var(--warm-white);
+      outline: none; transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--carnation);
+      box-shadow: 0 0 0 3px rgba(232,163,163,0.18);
+    }
+    .form-group textarea { min-height: 100px; resize: vertical; }
+    .attend-toggle { display: flex; gap: 12px; }
+    .attend-toggle input { display: none; }
+    .attend-toggle label {
+      flex: 1; padding: 13px 10px;
+      border: 1.5px solid var(--cream-border); border-radius: 14px;
+      text-align: center; cursor: pointer; font-size: 0.88rem;
+      font-weight: 400; letter-spacing: 0.04em; text-transform: none;
+      color: var(--text-mid); transition: all 0.25s; background: var(--warm-white);
+    }
+    .attend-toggle input:checked + label {
+      border-color: var(--deep-rose);
+      background: linear-gradient(135deg, #f9e8ec, #fdf0f0);
+      color: var(--deep-rose); font-weight: 700;
+    }
+    #confirmation { display: none; text-align: center; padding: 20px 0; }
+    #confirmation .conf-icon { font-size: 2.8rem; margin-bottom: 14px; }
+    #confirmation h3 {
+      font-family: 'Cormorant Garant', serif; font-size: 1.8rem;
+      font-weight: 400; color: var(--deep-rose); margin-bottom: 12px;
+    }
+    #confirmation p { color: var(--text-mid); font-size: 0.95rem; line-height: 1.7; font-weight: 300; }
+
+    /* ── DRESS CODE ──────────────────────────────────────── */
+    #dresscode { background: var(--warm-white); text-align: center; }
+    .dresscode-card {
+      max-width: 580px; margin: 0 auto;
+      background: linear-gradient(135deg, #fff5f7, #fff8f5);
+      border: 1px solid var(--cream-border); border-radius: 28px;
+      padding: 48px 40px;
+      box-shadow: 0 4px 26px rgba(201,112,128,0.09);
+    }
+    .swatch-row { display: flex; gap: 10px; justify-content: center; margin: 24px 0; }
+    .swatch {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    }
+    .dresscode-text {
+      font-family: 'Cormorant Garant', serif; font-size: 1.18rem;
+      font-weight: 300; font-style: italic; color: var(--text-mid); line-height: 1.8;
+    }
+
+    /* ── LOCATION ─────────────────────────────────────────── */
+    #location { background: var(--blush-cream); text-align: center; }
+    .location-card {
+      max-width: 520px; margin: 0 auto; background: #fff;
+      border: 1px solid var(--cream-border); border-radius: 28px;
+      padding: 44px 36px; box-shadow: 0 6px 32px rgba(201,112,128,0.09);
+    }
+    .map-placeholder {
+      background: linear-gradient(135deg, #f9eef0, #fdf5f2);
+      border-radius: 18px; height: 160px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 24px; border: 1px solid var(--cream-border);
+    }
+    .location-address {
+      font-family: 'Cormorant Garant', serif; font-size: 1.3rem;
+      font-weight: 400; color: var(--text-dark);
+      margin-bottom: 24px; line-height: 1.5;
+    }
+
+    /* ── COUNTDOWN ────────────────────────────────────────── */
+    #countdown { background: var(--warm-white); text-align: center; }
+    .countdown-grid { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .countdown-unit {
+      background: #fff; border: 1px solid var(--cream-border);
+      border-radius: 20px; padding: 28px 20px 20px; min-width: 90px;
+      box-shadow: 0 4px 20px rgba(201,112,128,0.09);
+    }
+    .countdown-number {
+      font-family: 'Cormorant Garant', serif; font-size: 3rem;
+      font-weight: 300; color: var(--deep-rose); line-height: 1; display: block;
+    }
+    .countdown-label {
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text-light); margin-top: 6px; display: block;
+    }
+
+    /* ── GAME ─────────────────────────────────────────────── */
+    #game-section { background: var(--blush-cream); text-align: center; }
+    .game-wrap {
+      max-width: 640px; margin: 0 auto; background: #fff;
+      border: 1px solid var(--cream-border); border-radius: 28px;
+      padding: 32px 28px 36px; box-shadow: 0 6px 32px rgba(201,112,128,0.09);
+    }
+    .game-intro {
+      font-family: 'Cormorant Garant', serif; font-size: 1.25rem;
+      font-weight: 300; font-style: italic; color: var(--text-mid);
+      margin-bottom: 20px; line-height: 1.6;
+    }
+    #fishGameCanvas {
+      width: 100%; max-width: 560px; height: auto;
+      background: linear-gradient(180deg, #cdeefc 0%, #aee0f5 60%, #8fd0ea 100%);
+      border-radius: 18px; border: 1px solid var(--cream-border);
+      box-shadow: 0 4px 18px rgba(201,112,128,0.10);
+      touch-action: none; cursor: pointer;
+    }
+    .game-meta {
+      display: flex; justify-content: space-around; align-items: center;
+      max-width: 560px; margin: 14px auto 4px; font-size: 0.85rem;
+      color: var(--text-mid); letter-spacing: 0.04em; gap: 8px; flex-wrap: wrap;
+    }
+    .game-meta span b { color: var(--deep-rose); font-weight: 700; }
+    .game-hint {
+      font-size: 0.78rem; color: var(--text-light); margin-top: 10px;
+      letter-spacing: 0.03em;
+    }
+
+    /* ── FOOTER ───────────────────────────────────────────── */
+    footer {
+      background: var(--warm-white); text-align: center;
+      padding: 56px 24px 44px; border-top: 1px solid var(--cream-border);
+      position: relative; overflow: hidden;
+    }
+    .footer-text {
+      font-family: 'Cormorant Garant', serif; font-size: 1.55rem;
+      font-weight: 300; font-style: italic; color: var(--deep-rose); margin: 18px 0 8px;
+    }
+    .footer-sub {
+      font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--text-light); font-weight: 300;
+    }
+
+    /* ── SCROLL REVEAL ────────────────────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ───────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .rsvp-card { padding: 32px 20px; }
+      .dresscode-card { padding: 32px 20px; }
+      .hero-corner.tl, .hero-corner.tr { width: 160px; }
+      .hero-corner.bl, .hero-corner.br { width: 130px; }
+      .countdown-unit { min-width: 72px; padding: 22px 12px 16px; }
+      .countdown-number { font-size: 2.2rem; }
+      .details-grid { grid-template-columns: 1fr; }
+      .sec-floral-l, .sec-floral-r { opacity: 0.22; width: 110px; }
+      .game-wrap { padding: 24px 16px 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     PASSCODE SCREEN
+═══════════════════════════════════════════════ -->
+<div id="passcode-screen">
+  <!-- background petals container -->
+  <div id="pc-petals" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
+
+  <div class="passcode-card">
+    <!-- Peony + lily bouquet SVG -->
+    <svg width="200" height="110" viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto 20px;display:block;">
+      <!-- stems -->
+      <path d="M80 108 Q78 80 72 60" stroke="#7A9E7E" stroke-width="1.8" fill="none"/>
+      <path d="M100 108 Q100 75 100 50" stroke="#7A9E7E" stroke-width="1.8" fill="none"/>
+      <path d="M120 108 Q122 80 128 60" stroke="#7A9E7E" stroke-width="1.8" fill="none"/>
+      <path d="M65 108 Q60 78 52 55" stroke="#9DBE9E" stroke-width="1.4" fill="none"/>
+      <path d="M135 108 Q140 78 148 55" stroke="#9DBE9E" stroke-width="1.4" fill="none"/>
+      <!-- leaves -->
+      <ellipse cx="68" cy="72" rx="14" ry="6" fill="#7A9E7E" opacity="0.7" transform="rotate(-35 68 72)"/>
+      <ellipse cx="132" cy="72" rx="14" ry="6" fill="#7A9E7E" opacity="0.7" transform="rotate(35 132 72)"/>
+      <ellipse cx="58" cy="80" rx="11" ry="5" fill="#9DBE9E" opacity="0.6" transform="rotate(-50 58 80)"/>
+      <ellipse cx="142" cy="80" rx="11" ry="5" fill="#9DBE9E" opacity="0.6" transform="rotate(50 142 80)"/>
+      <!-- peony left (layered petals) -->
+      <ellipse cx="72" cy="52" rx="16" ry="13" fill="#F5CECE" opacity="0.8"/>
+      <ellipse cx="72" cy="48" rx="12" ry="10" fill="#F0B8C0" opacity="0.85"/>
+      <ellipse cx="68" cy="46" rx="9" ry="7" fill="#E8A3A3" opacity="0.9"/>
+      <ellipse cx="76" cy="46" rx="8" ry="6" fill="#F0B8C0" opacity="0.7"/>
+      <circle cx="72" cy="44" r="5" fill="#E8A3A3" opacity="0.85"/>
+      <circle cx="72" cy="44" r="2.5" fill="#C97080"/>
+      <!-- peony right -->
+      <ellipse cx="128" cy="52" rx="16" ry="13" fill="#F5CECE" opacity="0.8"/>
+      <ellipse cx="128" cy="48" rx="12" ry="10" fill="#F0B8C0" opacity="0.85"/>
+      <ellipse cx="132" cy="46" rx="9" ry="7" fill="#E8A3A3" opacity="0.9"/>
+      <ellipse cx="124" cy="46" rx="8" ry="6" fill="#F0B8C0" opacity="0.7"/>
+      <circle cx="128" cy="44" r="5" fill="#E8A3A3" opacity="0.85"/>
+      <circle cx="128" cy="44" r="2.5" fill="#C97080"/>
+      <!-- center lily -->
+      <path d="M100 20 Q94 35 100 50 Q106 35 100 20Z" fill="#F8D0C8" opacity="0.9"/>
+      <path d="M88 30 Q98 38 100 50 Q96 36 88 30Z" fill="#F8D0C8" opacity="0.85"/>
+      <path d="M112 30 Q102 38 100 50 Q104 36 112 30Z" fill="#F8D0C8" opacity="0.85"/>
+      <path d="M84 42 Q97 44 100 50 Q95 42 84 42Z" fill="#F5C4BC" opacity="0.8"/>
+      <path d="M116 42 Q103 44 100 50 Q105 42 116 42Z" fill="#F5C4BC" opacity="0.8"/>
+      <!-- lily spots -->
+      <circle cx="96" cy="40" r="1.2" fill="#C97080" opacity="0.7"/>
+      <circle cx="104" cy="40" r="1.2" fill="#C97080" opacity="0.7"/>
+      <circle cx="100" cy="34" r="1" fill="#C97080" opacity="0.6"/>
+      <!-- stamens -->
+      <line x1="100" y1="50" x2="96" y2="36" stroke="#C9957A" stroke-width="0.8"/>
+      <line x1="100" y1="50" x2="104" y2="36" stroke="#C9957A" stroke-width="0.8"/>
+      <line x1="100" y1="50" x2="100" y2="33" stroke="#C9957A" stroke-width="0.8"/>
+      <circle cx="96" cy="35" r="1.5" fill="#C9957A"/>
+      <circle cx="104" cy="35" r="1.5" fill="#C9957A"/>
+      <circle cx="100" cy="32" r="1.5" fill="#C9957A"/>
+      <!-- baby's breath -->
+      <circle cx="56" cy="52" r="2.5" fill="#EEDDD8" opacity="0.8"/>
+      <circle cx="50" cy="46" r="2" fill="#EEDDD8" opacity="0.7"/>
+      <circle cx="62" cy="44" r="2" fill="#EEDDD8" opacity="0.75"/>
+      <circle cx="144" cy="52" r="2.5" fill="#EEDDD8" opacity="0.8"/>
+      <circle cx="150" cy="46" r="2" fill="#EEDDD8" opacity="0.7"/>
+      <circle cx="138" cy="44" r="2" fill="#EEDDD8" opacity="0.75"/>
+      <circle cx="85" cy="28" r="1.8" fill="#EEDDD8" opacity="0.65"/>
+      <circle cx="115" cy="28" r="1.8" fill="#EEDDD8" opacity="0.65"/>
+    </svg>
+
+    <h2>You're on the list?</h2>
+    <p>Enter the passcode from your invitation</p>
+    <input class="pc-input" type="password" id="pc-field" placeholder="· · · · ·" maxlength="20" autocomplete="off"/>
+    <p class="pc-error" id="pc-error"></p>
+    <button class="btn btn-rose btn-full" onclick="checkPasscode()">Enter ♡</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN SITE
+═══════════════════════════════════════════════ -->
+<main id="main-site" style="display:none;">
+
+  <!-- ── HERO ─────────────────────────────────────────── -->
+  <section id="hero">
+
+    <!-- ambient/lily flower layer — confined to hero only -->
+    <div id="ambient-layer" style="position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;"></div>
+
+    <!-- TOP-LEFT corner bouquet -->
+    <svg class="hero-corner tl" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- stems -->
+      <path d="M20 280 Q40 200 60 140" stroke="#7A9E7E" stroke-width="2" fill="none"/>
+      <path d="M40 280 Q55 210 80 150" stroke="#7A9E7E" stroke-width="1.8" fill="none"/>
+      <path d="M10 280 Q20 220 30 160" stroke="#9DBE9E" stroke-width="1.4" fill="none"/>
+      <path d="M55 280 Q70 230 110 170" stroke="#9DBE9E" stroke-width="1.4" fill="none"/>
+      <!-- leaves -->
+      <ellipse cx="50" cy="190" rx="18" ry="7" fill="#7A9E7E" opacity="0.65" transform="rotate(-50 50 190)"/>
+      <ellipse cx="75" cy="210" rx="16" ry="6" fill="#9DBE9E" opacity="0.55" transform="rotate(-40 75 210)"/>
+      <ellipse cx="30" cy="215" rx="14" ry="5.5" fill="#7A9E7E" opacity="0.55" transform="rotate(-65 30 215)"/>
+      <ellipse cx="100" cy="185" rx="15" ry="6" fill="#C5DEC2" opacity="0.5" transform="rotate(-30 100 185)"/>
+      <!-- big peony 1 -->
+      <ellipse cx="75" cy="135" rx="26" ry="22" fill="#F5CECE" opacity="0.75"/>
+      <ellipse cx="75" cy="128" rx="20" ry="17" fill="#F0B8C0" opacity="0.82"/>
+      <ellipse cx="70" cy="124" rx="15" ry="12" fill="#E8A3A3" opacity="0.88"/>
+      <ellipse cx="80" cy="124" rx="13" ry="10" fill="#F0B8C0" opacity="0.72"/>
+      <ellipse cx="75" cy="120" rx="11" ry="9" fill="#E8A3A3" opacity="0.85"/>
+      <circle cx="75" cy="116" r="6" fill="#EEDDD8" opacity="0.9"/>
+      <circle cx="75" cy="116" r="3" fill="#C97080"/>
+      <!-- big peony 2 smaller -->
+      <ellipse cx="35" cy="155" rx="20" ry="17" fill="#F5CECE" opacity="0.7"/>
+      <ellipse cx="35" cy="149" rx="15" ry="12" fill="#F0B8C0" opacity="0.78"/>
+      <ellipse cx="35" cy="145" rx="10" ry="8" fill="#E8A3A3" opacity="0.82"/>
+      <circle cx="35" cy="141" r="5" fill="#EEDDD8" opacity="0.85"/>
+      <circle cx="35" cy="141" r="2.5" fill="#C97080"/>
+      <!-- lily accent -->
+      <path d="M110 110 Q104 130 110 148 Q116 130 110 110Z" fill="#F8D0C8" opacity="0.85"/>
+      <path d="M98 120 Q108 132 110 148 Q106 130 98 120Z" fill="#F8D0C8" opacity="0.8"/>
+      <path d="M122 120 Q112 132 110 148 Q114 130 122 120Z" fill="#F8D0C8" opacity="0.8"/>
+      <path d="M95 135 Q108 137 110 148 Q106 135 95 135Z" fill="#F5C4BC" opacity="0.75"/>
+      <path d="M125 135 Q112 137 110 148 Q114 135 125 135Z" fill="#F5C4BC" opacity="0.75"/>
+      <circle cx="106" cy="133" r="1.3" fill="#C97080" opacity="0.7"/>
+      <circle cx="114" cy="133" r="1.3" fill="#C97080" opacity="0.7"/>
+      <!-- stamens -->
+      <line x1="110" y1="148" x2="106" y2="128" stroke="#C9957A" stroke-width="0.9"/>
+      <line x1="110" y1="148" x2="114" y2="128" stroke="#C9957A" stroke-width="0.9"/>
+      <line x1="110" y1="148" x2="110" y2="124" stroke="#C9957A" stroke-width="0.9"/>
+      <circle cx="106" cy="127" r="2" fill="#C9957A"/>
+      <circle cx="114" cy="127" r="2" fill="#C9957A"/>
+      <circle cx="110" cy="123" r="2" fill="#C9957A"/>
+      <!-- baby's breath clusters -->
+      <circle cx="95" cy="160" r="3" fill="#EEDDD8" opacity="0.75"/>
+      <circle cx="88" cy="155" r="2.5" fill="#EEDDD8" opacity="0.7"/>
+      <circle cx="102" cy="168" r="2" fill="#EEDDD8" opacity="0.65"/>
+      <circle cx="55" cy="168" r="2.5" fill="#EEDDD8" opacity="0.7"/>
+      <circle cx="48" cy="162" r="2" fill="#EEDDD8" opacity="0.65"/>
+      <circle cx="20" cy="170" r="2" fill="#EEDDD8" opacity="0.55"/>
+      <circle cx="120" cy="170" r="2" fill="#EEDDD8" opacity="0.55"/>
+    </svg>
+
+    <!-- TOP-RIGHT (mirrored) -->
+    <svg class="hero-corner tr" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 280 Q40 200 60 140" stroke="#7A9E7E" stroke-width="2" fill="none"/>
+      <path d="M40 280 Q55 210 80 150" stroke="#7A9E7E" stroke-width="1.8" fill="none"/>
+      <path d="M10 280 Q20 220 30 160" stroke="#9DBE9E" stroke-width="1.4" fill="none"/>
+      <path d="M55 280 Q70 230 110 170" stroke="#9DBE9E" stroke-width="1.4" fill="none"/>
+      <ellipse cx="50" cy="190" rx="18" ry="7" fill="#7A9E7E" opacity="0.65" transform="rotate(-50 50 190)"/>
+      <ellipse cx="75" cy="210" rx="16" ry="6" fill="#9DBE9E" opacity="0.55" transform="rotate(-40 75 210)"/>
+      <ellipse cx="30" cy="215" rx="14" ry="5.5" fill="#7A9E7E" opacity="0.55" transform="rotate(-65 30 215)"/>
+      <ellipse cx="75" cy="135" rx="26" ry="22" fill="#F5CECE" opacity="0.75"/>
+      <ellipse cx="75" cy="128" rx="20" ry="17" fill="#F0B8C0" opacity="0.82"/>
+      <ellipse cx="70" cy="124" rx="15" ry="12" fill="#E8A3A3" opacity="0.88"/>
+      <ellipse cx="80" cy="124" rx="13" ry="10" fill="#F0B8C0" opacity="0.72"/>
+      <ellipse cx="75" cy="120" rx="11" ry="9" fill="#E8A3A3" opacity="0.85"/>
+      <circle cx="75" cy="116" r="6" fill="#EEDDD8" opacity="0.9"/>
+      <circle cx="75" cy="116" r="3" fill="#C97080"/>
+      <ellipse cx="35" cy="155" rx="20" ry="17" fill="#F5CECE" opacity="0.7"/>
+      <ellipse cx="35" cy="149" rx="15" ry="12" fill="#F0B8C0" opacity="0.78"/>
+      <ellipse cx="35" cy="145" rx="10" ry="8" fill="#E8A3A3" opacity="0.82"/>
+      <circle cx="35" cy="141" r="5" fill="#EEDDD8" opacity="0.85"/>
+      <circle cx="35" cy="141" r="2.5" fill="#C97080"/>
+      <path d="M110 110 Q104 130 110 148 Q116 130 110 110Z" fill="#F8D0C8" opacity="0.85"/>
+      <path d="M98 120 Q108 132 110 148 Q106 130 98 120Z" fill="#F8D0C8" opacity="0.8"/>
+      <path d="M122 120 Q112 132 110 148 Q114 130 122 120Z" fill="#F8D0C8" opacity="0.8"/>
+      <path d="M95 135 Q108 137 110 148 Q106 135 95 135Z" fill="#F5C4BC" opacity="0.75"/>
+      <path d="M125 135 Q112 137 110 148 Q114 135 125 135Z" fill="#F5C4BC" opacity="0.75"/>
+      <circle cx="95" cy="160" r="3" fill="#EEDDD8" opacity="0.75"/>
+      <circle cx="88" cy="155" r="2.5" fill="#EEDDD8" opacity="0.7"/>
+      <circle cx="55" cy="168" r="2.5" fill="#EEDDD8" opacity="0.7"/>
+      <circle cx="120" cy="170" r="2" fill="#EEDDD8" opacity="0.55"/>
+    </svg>
+
+    <!-- BOTTOM-LEFT -->
+    <svg class="hero-corner bl" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 280 Q40 200 60 140" stroke="#7A9E7E" stroke-width="1.8" fill="none"/>
+      <path d="M40 280 Q55 210 80 150" stroke="#7A9E7E" stroke-width="1.5" fill="none"/>
+      <ellipse cx="50" cy="190" rx="16" ry="6" fill="#7A9E7E" opacity="0.6" transform="rotate(-50 50 190)"/>
+      <ellipse cx="75" cy="155" rx="20" ry="16" fill="#F5CECE" opacity="0.72"/>
+      <ellipse cx="75" cy="149" rx="14" ry="11" fill="#F0B8C0" opacity="0.8"/>
+      <ellipse cx="75" cy="145" rx="9" ry="7" fill="#E8A3A3" opacity="0.85"/>
+      <circle cx="75" cy="141" r="5" fill="#EEDDD8" opacity="0.85"/>
+      <circle cx="75" cy="141" r="2.5" fill="#C97080"/>
+      <ellipse cx="35" cy="165" rx="16" ry="13" fill="#F5CECE" opacity="0.65"/>
+      <ellipse cx="35" cy="160" rx="11" ry="9" fill="#E8A3A3" opacity="0.75"/>
+      <circle cx="35" cy="156" r="4" fill="#C97080" opacity="0.7"/>
+      <circle cx="55" cy="175" r="2.5" fill="#EEDDD8" opacity="0.65"/>
+      <circle cx="88" cy="165" r="2" fill="#EEDDD8" opacity="0.6"/>
+    </svg>
+
+    <!-- BOTTOM-RIGHT -->
+    <svg class="hero-corner br" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 280 Q40 200 60 140" stroke="#7A9E7E" stroke-width="1.8" fill="none"/>
+      <path d="M40 280 Q55 210 80 150" stroke="#7A9E7E" stroke-width="1.5" fill="none"/>
+      <ellipse cx="50" cy="190" rx="16" ry="6" fill="#7A9E7E" opacity="0.6" transform="rotate(-50 50 190)"/>
+      <ellipse cx="75" cy="155" rx="20" ry="16" fill="#F5CECE" opacity="0.72"/>
+      <ellipse cx="75" cy="149" rx="14" ry="11" fill="#F0B8C0" opacity="0.8"/>
+      <ellipse cx="75" cy="145" rx="9" ry="7" fill="#E8A3A3" opacity="0.85"/>
+      <circle cx="75" cy="141" r="5" fill="#EEDDD8" opacity="0.85"/>
+      <circle cx="75" cy="141" r="2.5" fill="#C97080"/>
+      <circle cx="55" cy="175" r="2.5" fill="#EEDDD8" opacity="0.65"/>
+    </svg>
+
+    <!-- Hero content -->
+    <div class="hero-inner">
+      <p class="eyebrow">♡ &nbsp; you're invited &nbsp; ♡</p>
+
+      <div class="floral-divider" style="opacity:0; animation: fadeUp 1s ease 0.4s forwards;">
+        <svg viewBox="0 0 320 36" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="18" x2="100" y2="18" stroke="#E8A3A3" stroke-width="0.8" opacity="0.45"/>
+          <!-- lily left -->
+          <path d="M116 8 Q112 16 116 24 Q120 16 116 8Z" fill="#F8D0C8" opacity="0.85"/>
+          <path d="M109 13 Q115 17 116 24 Q113 16 109 13Z" fill="#F5C4BC" opacity="0.8"/>
+          <path d="M123 13 Q117 17 116 24 Q119 16 123 13Z" fill="#F5C4BC" opacity="0.8"/>
+          <circle cx="116" cy="6" r="1.5" fill="#C9957A"/>
+          <!-- peony center -->
+          <ellipse cx="160" cy="16" rx="12" ry="10" fill="#F5CECE" opacity="0.85"/>
+          <ellipse cx="160" cy="14" rx="8" ry="7" fill="#F0B8C0" opacity="0.88"/>
+          <ellipse cx="160" cy="12" rx="5" ry="4" fill="#E8A3A3" opacity="0.9"/>
+          <circle cx="160" cy="10" r="2.5" fill="#C97080"/>
+          <!-- lily right -->
+          <path d="M204 8 Q200 16 204 24 Q208 16 204 8Z" fill="#F8D0C8" opacity="0.85"/>
+          <path d="M197 13 Q203 17 204 24 Q201 16 197 13Z" fill="#F5C4BC" opacity="0.8"/>
+          <path d="M211 13 Q205 17 204 24 Q207 16 211 13Z" fill="#F5C4BC" opacity="0.8"/>
+          <circle cx="204" cy="6" r="1.5" fill="#C9957A"/>
+          <!-- baby's breath -->
+          <circle cx="136" cy="14" r="2" fill="#EEDDD8" opacity="0.7"/>
+          <circle cx="144" cy="22" r="1.8" fill="#EEDDD8" opacity="0.65"/>
+          <circle cx="176" cy="14" r="2" fill="#EEDDD8" opacity="0.7"/>
+          <circle cx="184" cy="22" r="1.8" fill="#EEDDD8" opacity="0.65"/>
+          <!-- leaves -->
+          <ellipse cx="130" cy="20" rx="8" ry="3" fill="#9DBE9E" opacity="0.55" transform="rotate(-30 130 20)"/>
+          <ellipse cx="190" cy="20" rx="8" ry="3" fill="#9DBE9E" opacity="0.55" transform="rotate(30 190 20)"/>
+          <line x1="220" y1="18" x2="320" y2="18" stroke="#E8A3A3" stroke-width="0.8" opacity="0.45"/>
+        </svg>
+      </div>
+
+      <h1 class="hero-title">
+        Amana's<br/><em>Birthday</em><br/>Bash
+      </h1>
+      <p class="hero-subtitle">Saturday, August 15th, 2026</p>
+      <div class="hero-cta">
+        <a href="#rsvp" class="btn btn-rose">RSVP Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WIDE FLORAL DIVIDER -->
+  <div style="background:var(--warm-white); padding:16px 0; position:relative; overflow:hidden;">
+    <div class="floral-divider">
+      <svg viewBox="0 0 440 52" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="26" x2="120" y2="26" stroke="#E8A3A3" stroke-width="0.8" opacity="0.4"/>
+        <!-- left lily -->
+        <path d="M136 10 Q130 22 136 36 Q142 22 136 10Z" fill="#F8D0C8" opacity="0.85"/>
+        <path d="M126 20 Q134 26 136 36 Q132 23 126 20Z" fill="#F5C4BC" opacity="0.78"/>
+        <path d="M146 20 Q138 26 136 36 Q140 23 146 20Z" fill="#F5C4BC" opacity="0.78"/>
+        <circle cx="136" cy="8" r="2" fill="#C9957A"/>
+        <!-- leaf -->
+        <ellipse cx="123" cy="28" rx="12" ry="4.5" fill="#7A9E7E" opacity="0.55" transform="rotate(-35 123 28)"/>
+        <!-- peony left -->
+        <ellipse cx="172" cy="25" rx="17" ry="14" fill="#F5CECE" opacity="0.8"/>
+        <ellipse cx="172" cy="22" rx="12" ry="10" fill="#F0B8C0" opacity="0.85"/>
+        <ellipse cx="172" cy="19" rx="8" ry="6" fill="#E8A3A3" opacity="0.9"/>
+        <circle cx="172" cy="16" r="3.5" fill="#C97080"/>
+        <!-- big center peony -->
+        <ellipse cx="220" cy="24" rx="20" ry="16" fill="#F5CECE" opacity="0.85"/>
+        <ellipse cx="220" cy="20" rx="14" ry="11" fill="#F0B8C0" opacity="0.88"/>
+        <ellipse cx="220" cy="17" rx="9" ry="7.5" fill="#E8A3A3" opacity="0.92"/>
+        <circle cx="220" cy="13" r="5" fill="#EEDDD8" opacity="0.9"/>
+        <circle cx="220" cy="13" r="2.5" fill="#C97080"/>
+        <!-- peony right -->
+        <ellipse cx="268" cy="25" rx="17" ry="14" fill="#F5CECE" opacity="0.8"/>
+        <ellipse cx="268" cy="22" rx="12" ry="10" fill="#F0B8C0" opacity="0.85"/>
+        <ellipse cx="268" cy="19" rx="8" ry="6" fill="#E8A3A3" opacity="0.9"/>
+        <circle cx="268" cy="16" r="3.5" fill="#C97080"/>
+        <!-- leaf right -->
+        <ellipse cx="317" cy="28" rx="12" ry="4.5" fill="#7A9E7E" opacity="0.55" transform="rotate(35 317 28)"/>
+        <!-- right lily -->
+        <path d="M304 10 Q298 22 304 36 Q310 22 304 10Z" fill="#F8D0C8" opacity="0.85"/>
+        <path d="M294 20 Q302 26 304 36 Q300 23 294 20Z" fill="#F5C4BC" opacity="0.78"/>
+        <path d="M314 20 Q306 26 304 36 Q308 23 314 20Z" fill="#F5C4BC" opacity="0.78"/>
+        <circle cx="304" cy="8" r="2" fill="#C9957A"/>
+        <!-- baby's breath -->
+        <circle cx="155" cy="20" r="2.2" fill="#EEDDD8" opacity="0.7"/>
+        <circle cx="196" cy="18" r="2" fill="#EEDDD8" opacity="0.65"/>
+        <circle cx="244" cy="18" r="2" fill="#EEDDD8" opacity="0.65"/>
+        <circle cx="285" cy="20" r="2.2" fill="#EEDDD8" opacity="0.7"/>
+        <circle cx="200" cy="36" r="1.8" fill="#EEDDD8" opacity="0.55"/>
+        <circle cx="240" cy="36" r="1.8" fill="#EEDDD8" opacity="0.55"/>
+        <line x1="320" y1="26" x2="440" y2="26" stroke="#E8A3A3" stroke-width="0.8" opacity="0.4"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── EVENT DETAILS ─────────────────────────────────── -->
+  <section id="details">
+    <!-- side florals -->
+    <svg class="sec-floral-l" viewBox="0 0 160 240" xmlns="http://www.w3.org/2000/svg">
+      <path d="M80 240 Q70 180 50 120" stroke="#9DBE9E" stroke-width="1.5" fill="none"/>
+      <path d="M100 240 Q95 175 80 110" stroke="#7A9E7E" stroke-width="1.5" fill="none"/>
+      <ellipse cx="65" cy="165" rx="15" ry="6" fill="#7A9E7E" opacity="0.55" transform="rotate(-45 65 165)"/>
+      <ellipse cx="90" cy="155" rx="13" ry="5" fill="#9DBE9E" opacity="0.5" transform="rotate(-30 90 155)"/>
+      <ellipse cx="55" cy="115" rx="20" ry="16" fill="#F5CECE" opacity="0.7"/>
+      <ellipse cx="55" cy="110" rx="14" ry="11" fill="#F0B8C0" opacity="0.78"/>
+      <circle cx="55" cy="106" r="5" fill="#C97080" opacity="0.7"/>
+      <ellipse cx="88" cy="100" rx="16" ry="13" fill="#F5CECE" opacity="0.65"/>
+      <ellipse cx="88" cy="96" rx="11" ry="8" fill="#E8A3A3" opacity="0.75"/>
+      <circle cx="88" cy="93" r="4" fill="#C97080" opacity="0.65"/>
+      <circle cx="40" cy="128" r="2.5" fill="#EEDDD8" opacity="0.7"/>
+      <circle cx="72" cy="122" r="2" fill="#EEDDD8" opacity="0.65"/>
+    </svg>
+    <svg class="sec-floral-r" viewBox="0 0 160 240" xmlns="http://www.w3.org/2000/svg">
+      <path d="M80 240 Q70 180 50 120" stroke="#9DBE9E" stroke-width="1.5" fill="none"/>
+      <path d="M100 240 Q95 175 80 110" stroke="#7A9E7E" stroke-width="1.5" fill="none"/>
+      <ellipse cx="65" cy="165" rx="15" ry="6" fill="#7A9E7E" opacity="0.55" transform="rotate(-45 65 165)"/>
+      <ellipse cx="90" cy="155" rx="13" ry="5" fill="#9DBE9E" opacity="0.5" transform="rotate(-30 90 155)"/>
+      <ellipse cx="55" cy="115" rx="20" ry="16" fill="#F5CECE" opacity="0.7"/>
+      <ellipse cx="55" cy="110" rx="14" ry="11" fill="#F0B8C0" opacity="0.78"/>
+      <circle cx="55" cy="106" r="5" fill="#C97080" opacity="0.7"/>
+      <ellipse cx="88" cy="100" rx="16" ry="13" fill="#F5CECE" opacity="0.65"/>
+      <ellipse cx="88" cy="96" rx="11" ry="8" fill="#E8A3A3" opacity="0.75"/>
+      <circle cx="88" cy="93" r="4" fill="#C97080" opacity="0.65"/>
+      <circle cx="40" cy="128" r="2.5" fill="#EEDDD8" opacity="0.7"/>
+      <circle cx="72" cy="122" r="2" fill="#EEDDD8" opacity="0.65"/>
+    </svg>
+
+    <div class="reveal" style="max-width:740px;margin:0 auto;text-align:center;">
+      <p class="section-label">The details</p>
+      <h2 class="section-title">Save the Date</h2>
+    </div>
+    <div class="details-grid">
+      <div class="detail-card reveal">
+        <span class="detail-icon">🌸</span>
+        <h3>Date & Time</h3>
+        <p>Saturday<br/>August 15th, 2026<br/>4 PM</p>
+      </div>
+      <div class="detail-card reveal">
+        <span class="detail-icon">📍</span>
+        <h3>Location</h3>
+        <p>67 Robins Nest Drive<br/>L4H 3A8</p>
+      </div>
+      <div class="detail-card reveal">
+        <span class="detail-icon">🌷</span>
+        <h3>Dress Code</h3>
+        <p>Summer Vibes</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVIDER -->
+  <div style="background:var(--blush-cream); padding:10px 0;">
+    <div class="floral-divider">
+      <svg viewBox="0 0 360 40" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="20" x2="110" y2="20" stroke="#E8A3A3" stroke-width="0.7" opacity="0.4"/>
+        <ellipse cx="130" cy="20" rx="10" ry="4" fill="#C5DEC2" opacity="0.55" transform="rotate(-20 130 20)"/>
+        <path d="M150 8 Q145 18 150 30 Q155 18 150 8Z" fill="#F8D0C8" opacity="0.85"/>
+        <path d="M144 15 Q149 19 150 30 Q147 18 144 15Z" fill="#F5C4BC" opacity="0.78"/>
+        <path d="M156 15 Q151 19 150 30 Q153 18 156 15Z" fill="#F5C4BC" opacity="0.78"/>
+        <circle cx="150" cy="6" r="1.8" fill="#C9957A"/>
+        <ellipse cx="180" cy="18" rx="14" ry="11" fill="#F5CECE" opacity="0.82"/>
+        <ellipse cx="180" cy="15" rx="9" ry="7" fill="#E8A3A3" opacity="0.88"/>
+        <circle cx="180" cy="12" r="3.5" fill="#C97080"/>
+        <path d="M210 8 Q205 18 210 30 Q215 18 210 8Z" fill="#F8D0C8" opacity="0.85"/>
+        <path d="M204 15 Q209 19 210 30 Q207 18 204 15Z" fill="#F5C4BC" opacity="0.78"/>
+        <path d="M216 15 Q211 19 210 30 Q213 18 216 15Z" fill="#F5C4BC" opacity="0.78"/>
+        <circle cx="210" cy="6" r="1.8" fill="#C9957A"/>
+        <ellipse cx="230" cy="20" rx="10" ry="4" fill="#C5DEC2" opacity="0.55" transform="rotate(20 230 20)"/>
+        <circle cx="165" cy="28" r="2" fill="#EEDDD8" opacity="0.65"/>
+        <circle cx="195" cy="28" r="2" fill="#EEDDD8" opacity="0.65"/>
+        <line x1="250" y1="20" x2="360" y2="20" stroke="#E8A3A3" stroke-width="0.7" opacity="0.4"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── RSVP ──────────────────────────────────────────── -->
+  <section id="rsvp">
+    <div style="text-align:center;margin-bottom:12px;" class="reveal">
+      <p class="section-label">Will you join us?</p>
+      <h2 class="section-title">RSVP</h2>
+    </div>
+    <div class="rsvp-card reveal">
+      <div id="rsvp-form-wrap">
+        <form id="rsvp-form" onsubmit="handleRSVP(event)">
+          <div class="form-group">
+            <label for="name">Your Full Name *</label>
+            <input type="text" id="name" name="name" placeholder="e.g. Sophie Williams" required />
+          </div>
+          <div class="form-group">
+            <label>Will you be attending? *</label>
+            <div class="attend-toggle">
+              <input type="radio" name="attending" id="yes" value="Yes, I'll be there!" required />
+              <label for="yes" style="text-transform:none;font-size:0.9rem;">✓ &nbsp;Yes, I'll be there!</label>
+              <input type="radio" name="attending" id="no" value="Sorry, I can't make it" />
+              <label for="no" style="text-transform:none;font-size:0.9rem;">✗ &nbsp;Sorry, I can't make it</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="dietary">Dietary Restrictions or Allergies</label>
+            <input type="text" id="dietary" name="dietary" placeholder="e.g. Vegetarian, gluten-free, nut allergy…" />
+          </div>
+          <div class="form-group">
+            <label for="song">Song Request 🎵</label>
+            <input type="text" id="song" name="song" placeholder="What song gets you on the dance floor?" />
+          </div>
+          <div class="form-group">
+            <label for="message">A Note for Amana</label>
+            <textarea id="message" name="message" placeholder=""></textarea>
+          </div>
+          <button type="submit" class="btn btn-rose btn-full" style="margin-top:8px;">
+            Send My RSVP ♡
+          </button>
+        </form>
+      </div>
+      <div id="confirmation">
+        <div class="conf-icon">🌸</div>
+        <h3>Thank you, <span id="conf-name"></span>!</h3>
+        <p id="conf-msg">I can't wait to celebrate with you —<br/>see you on August 15th! ♡</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVIDER -->
+  <div style="background:var(--warm-white); padding:10px 0;">
+    <div class="floral-divider">
+      <svg viewBox="0 0 360 44" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="22" x2="100" y2="22" stroke="#E8A3A3" stroke-width="0.7" opacity="0.4"/>
+        <ellipse cx="118" cy="22" rx="12" ry="5" fill="#C5DEC2" opacity="0.5" transform="rotate(-25 118 22)"/>
+        <ellipse cx="150" cy="20" rx="16" ry="13" fill="#F5CECE" opacity="0.78"/>
+        <ellipse cx="150" cy="17" rx="11" ry="8" fill="#E8A3A3" opacity="0.85"/>
+        <circle cx="150" cy="14" r="4" fill="#C97080"/>
+        <ellipse cx="180" cy="18" rx="19" ry="15" fill="#F5CECE" opacity="0.85"/>
+        <ellipse cx="180" cy="14" rx="13" ry="10" fill="#F0B8C0" opacity="0.88"/>
+        <ellipse cx="180" cy="11" rx="8" ry="6" fill="#E8A3A3" opacity="0.92"/>
+        <circle cx="180" cy="8" r="3.5" fill="#C97080"/>
+        <ellipse cx="210" cy="20" rx="16" ry="13" fill="#F5CECE" opacity="0.78"/>
+        <ellipse cx="210" cy="17" rx="11" ry="8" fill="#E8A3A3" opacity="0.85"/>
+        <circle cx="210" cy="14" r="4" fill="#C97080"/>
+        <ellipse cx="242" cy="22" rx="12" ry="5" fill="#C5DEC2" opacity="0.5" transform="rotate(25 242 22)"/>
+        <circle cx="135" cy="30" r="2.2" fill="#EEDDD8" opacity="0.65"/>
+        <circle cx="165" cy="32" r="1.8" fill="#EEDDD8" opacity="0.6"/>
+        <circle cx="195" cy="32" r="1.8" fill="#EEDDD8" opacity="0.6"/>
+        <circle cx="225" cy="30" r="2.2" fill="#EEDDD8" opacity="0.65"/>
+        <line x1="260" y1="22" x2="360" y2="22" stroke="#E8A3A3" stroke-width="0.7" opacity="0.4"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── DRESS CODE ────────────────────────────────────── -->
+  <section id="dresscode">
+    <div class="reveal" style="text-align:center;margin-bottom:8px;">
+      <p class="section-label">What to wear</p>
+      <h2 class="section-title">Dress Code</h2>
+    </div>
+    <div class="dresscode-card reveal">
+      <!-- animated palette flowers replacing swatches -->
+      <div class="palette-flowers" style="display:flex;gap:18px;justify-content:center;align-items:flex-end;margin:24px 0;flex-wrap:wrap;">
+
+        <!-- 1. Soft pink peony -->
+        <div style="animation:paletteSway 3.2s ease-in-out infinite alternate;">
+          <svg width="52" height="64" viewBox="0 0 52 64" xmlns="http://www.w3.org/2000/svg">
+            <line x1="26" y1="64" x2="26" y2="36" stroke="#7A9E7E" stroke-width="2"/>
+            <ellipse cx="18" cy="50" rx="10" ry="4" fill="#7A9E7E" opacity="0.6" transform="rotate(-35 18 50)"/>
+            <ellipse cx="26" cy="24" rx="18" ry="15" fill="#F5CECE" opacity="0.85"/>
+            <ellipse cx="26" cy="20" rx="13" ry="10" fill="#F0B8C0" opacity="0.88"/>
+            <ellipse cx="26" cy="16" rx="8"  ry="6"  fill="#E8A3A3" opacity="0.92"/>
+            <circle  cx="26" cy="13" r="3.5" fill="#C97080"/>
+            <circle  cx="14" cy="10" r="2"   fill="#EEDDD8" opacity="0.7"/>
+            <circle  cx="38" cy="10" r="2"   fill="#EEDDD8" opacity="0.7"/>
+          </svg>
+        </div>
+
+        <!-- 2. Cream white peony -->
+        <div style="animation:paletteSway 3.8s ease-in-out infinite alternate-reverse;">
+          <svg width="48" height="60" viewBox="0 0 48 60" xmlns="http://www.w3.org/2000/svg">
+            <line x1="24" y1="60" x2="24" y2="34" stroke="#7A9E7E" stroke-width="2"/>
+            <ellipse cx="33" cy="48" rx="9" ry="3.5" fill="#9DBE9E" opacity="0.6" transform="rotate(35 33 48)"/>
+            <ellipse cx="24" cy="22" rx="16" ry="13" fill="#FFFAF7" opacity="0.9"/>
+            <ellipse cx="24" cy="18" rx="11" ry="9"  fill="#F5F0EC" opacity="0.88"/>
+            <ellipse cx="24" cy="15" rx="7"  ry="5"  fill="#EDE5DC" opacity="0.85"/>
+            <circle  cx="24" cy="12" r="3"   fill="#D4B898"/>
+          </svg>
+        </div>
+
+        <!-- 3. Deep rose stargazer lily -->
+        <div style="animation:paletteSway 2.9s ease-in-out infinite alternate;">
+          <svg width="56" height="70" viewBox="0 0 56 70" xmlns="http://www.w3.org/2000/svg">
+            <line x1="28" y1="70" x2="28" y2="40" stroke="#7A9E7E" stroke-width="2"/>
+            <ellipse cx="18" cy="56" rx="11" ry="4" fill="#7A9E7E" opacity="0.6" transform="rotate(-40 18 56)"/>
+            <!-- lily petals -->
+            <path d="M28 10 Q22 26 28 42 Q34 26 28 10Z" fill="#C97080" opacity="0.9"/>
+            <path d="M14 18 Q24 28 28 42 Q22 26 14 18Z" fill="#C97080" opacity="0.85"/>
+            <path d="M42 18 Q32 28 28 42 Q34 26 42 18Z" fill="#C97080" opacity="0.85"/>
+            <path d="M10 32 Q23 34 28 42 Q22 34 10 32Z" fill="#B86070" opacity="0.8"/>
+            <path d="M46 32 Q33 34 28 42 Q34 34 46 32Z" fill="#B86070" opacity="0.8"/>
+            <!-- spots -->
+            <circle cx="24" cy="28" r="1.5" fill="#7A2040" opacity="0.6"/>
+            <circle cx="32" cy="28" r="1.5" fill="#7A2040" opacity="0.6"/>
+            <circle cx="28" cy="22" r="1.2" fill="#7A2040" opacity="0.55"/>
+            <!-- stamens -->
+            <line x1="28" y1="42" x2="22" y2="24" stroke="#C9957A" stroke-width="1"/>
+            <line x1="28" y1="42" x2="34" y2="24" stroke="#C9957A" stroke-width="1"/>
+            <line x1="28" y1="42" x2="28" y2="20" stroke="#C9957A" stroke-width="1"/>
+            <circle cx="22" cy="23" r="2.2" fill="#C9957A"/>
+            <circle cx="34" cy="23" r="2.2" fill="#C9957A"/>
+            <circle cx="28" cy="19" r="2.2" fill="#C9957A"/>
+          </svg>
+        </div>
+
+        <!-- 4. Blush peony -->
+        <div style="animation:paletteSway 4.1s ease-in-out infinite alternate-reverse;">
+          <svg width="46" height="58" viewBox="0 0 46 58" xmlns="http://www.w3.org/2000/svg">
+            <line x1="23" y1="58" x2="23" y2="32" stroke="#9DBE9E" stroke-width="2"/>
+            <ellipse cx="32" cy="46" rx="9" ry="3.5" fill="#9DBE9E" opacity="0.55" transform="rotate(30 32 46)"/>
+            <ellipse cx="23" cy="22" rx="15" ry="12" fill="#EEDDD8" opacity="0.88"/>
+            <ellipse cx="23" cy="18" rx="10" ry="8"  fill="#E5CCC4" opacity="0.85"/>
+            <ellipse cx="23" cy="15" rx="6"  ry="5"  fill="#D4B0A8" opacity="0.82"/>
+            <circle  cx="23" cy="12" r="3"   fill="#C9957A"/>
+          </svg>
+        </div>
+
+        <!-- 5. Warm sand / gold lily -->
+        <div style="animation:paletteSway 3.5s ease-in-out infinite alternate;">
+          <svg width="50" height="62" viewBox="0 0 50 62" xmlns="http://www.w3.org/2000/svg">
+            <line x1="25" y1="62" x2="25" y2="36" stroke="#7A9E7E" stroke-width="2"/>
+            <ellipse cx="15" cy="52" rx="10" ry="3.5" fill="#7A9E7E" opacity="0.55" transform="rotate(-35 15 52)"/>
+            <path d="M25 8  Q19 22 25 38 Q31 22 25 8Z"  fill="#E8D5A0" opacity="0.88"/>
+            <path d="M12 16 Q22 26 25 38 Q20 24 12 16Z" fill="#E0C88A" opacity="0.82"/>
+            <path d="M38 16 Q28 26 25 38 Q30 24 38 16Z" fill="#E0C88A" opacity="0.82"/>
+            <path d="M9  29 Q22 31 25 38 Q20 31 9  29Z" fill="#D4B878" opacity="0.78"/>
+            <path d="M41 29 Q28 31 25 38 Q30 31 41 29Z" fill="#D4B878" opacity="0.78"/>
+            <line x1="25" y1="38" x2="20" y2="22" stroke="#C9957A" stroke-width="0.9"/>
+            <line x1="25" y1="38" x2="30" y2="22" stroke="#C9957A" stroke-width="0.9"/>
+            <line x1="25" y1="38" x2="25" y2="18" stroke="#C9957A" stroke-width="0.9"/>
+            <circle cx="20" cy="21" r="2" fill="#C9957A"/>
+            <circle cx="30" cy="21" r="2" fill="#C9957A"/>
+            <circle cx="25" cy="17" r="2" fill="#C9957A"/>
+          </svg>
+        </div>
+
+        <!-- 6. Fresh green leaf / hydrangea -->
+        <div style="animation:paletteSway 3.0s ease-in-out infinite alternate-reverse;">
+          <svg width="50" height="64" viewBox="0 0 50 64" xmlns="http://www.w3.org/2000/svg">
+            <line x1="25" y1="64" x2="25" y2="38" stroke="#5A8A5E" stroke-width="2"/>
+            <!-- leaves -->
+            <ellipse cx="15" cy="52" rx="13" ry="5" fill="#5A8A5E" opacity="0.7" transform="rotate(-40 15 52)"/>
+            <ellipse cx="35" cy="50" rx="12" ry="4.5" fill="#7A9E7E" opacity="0.65" transform="rotate(35 35 50)"/>
+            <!-- hydrangea cluster -->
+            <circle cx="25" cy="20" r="14" fill="#A8C8A8" opacity="0.5"/>
+            <circle cx="18" cy="16" r="5.5" fill="#C5DEC2" opacity="0.85"/>
+            <circle cx="18" cy="16" r="2.5" fill="#7A9E7E"/>
+            <circle cx="32" cy="16" r="5.5" fill="#C5DEC2" opacity="0.85"/>
+            <circle cx="32" cy="16" r="2.5" fill="#7A9E7E"/>
+            <circle cx="25" cy="12" r="5.5" fill="#C5DEC2" opacity="0.85"/>
+            <circle cx="25" cy="12" r="2.5" fill="#7A9E7E"/>
+            <circle cx="18" cy="26" r="5"   fill="#C5DEC2" opacity="0.8"/>
+            <circle cx="18" cy="26" r="2.2" fill="#7A9E7E"/>
+            <circle cx="32" cy="26" r="5"   fill="#C5DEC2" opacity="0.8"/>
+            <circle cx="32" cy="26" r="2.2" fill="#7A9E7E"/>
+            <circle cx="25" cy="22" r="5"   fill="#B8D0B8" opacity="0.75"/>
+            <circle cx="25" cy="22" r="2.2" fill="#5A8A5E"/>
+          </svg>
+        </div>
+
+      </div>
+      <style>
+        @keyframes paletteSway {
+          0%   { transform: translateY(0)   rotate(-3deg) scale(1); }
+          100% { transform: translateY(-6px) rotate(3deg)  scale(1.04); }
+        }
+      </style>
+      <p class="dresscode-text">
+        Summer Attire ~ It's an outdoor party, make sure to bring a cover-up!
+      </p>
+      <div class="floral-divider" style="margin-top:24px;">
+        <svg viewBox="0 0 260 30" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="15" x2="85" y2="15" stroke="#E8A3A3" stroke-width="0.7" opacity="0.4"/>
+          <ellipse cx="100" cy="15" rx="10" ry="4" fill="#C5DEC2" opacity="0.5" transform="rotate(-20 100 15)"/>
+          <ellipse cx="130" cy="13" rx="12" ry="9" fill="#F5CECE" opacity="0.8"/>
+          <ellipse cx="130" cy="11" rx="8" ry="6" fill="#E8A3A3" opacity="0.85"/>
+          <circle cx="130" cy="9" r="3" fill="#C97080"/>
+          <ellipse cx="160" cy="15" rx="10" ry="4" fill="#C5DEC2" opacity="0.5" transform="rotate(20 160 15)"/>
+          <circle cx="116" cy="22" r="2" fill="#EEDDD8" opacity="0.65"/>
+          <circle cx="144" cy="22" r="2" fill="#EEDDD8" opacity="0.65"/>
+          <line x1="175" y1="15" x2="260" y2="15" stroke="#E8A3A3" stroke-width="0.7" opacity="0.4"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── LOCATION ───────────────────────────────────────── -->
+  <section id="location">
+    <div class="reveal" style="text-align:center;margin-bottom:12px;">
+      <p class="section-label">Where to find us</p>
+      <h2 class="section-title">Location</h2>
+    </div>
+    <div class="location-card reveal">
+      <div class="map-placeholder">
+        <svg viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg" width="140">
+          <path d="M70 12 C58 12 48 22 48 34 C48 52 70 78 70 78 C70 78 92 52 92 34 C92 22 82 12 70 12Z" fill="#E8A3A3" opacity="0.75"/>
+          <circle cx="70" cy="34" r="10" fill="#fff" opacity="0.9"/>
+          <circle cx="70" cy="34" r="5" fill="#C97080"/>
+          <!-- tiny flowers around -->
+          <circle cx="44" cy="70" r="5" fill="#F5CECE" opacity="0.6"/>
+          <circle cx="44" cy="70" r="2.5" fill="#C97080" opacity="0.55"/>
+          <circle cx="96" cy="70" r="5" fill="#F5CECE" opacity="0.6"/>
+          <circle cx="96" cy="70" r="2.5" fill="#C97080" opacity="0.55"/>
+          <circle cx="34" cy="55" r="3.5" fill="#F5CECE" opacity="0.5"/>
+          <circle cx="106" cy="55" r="3.5" fill="#F5CECE" opacity="0.5"/>
+          <ellipse cx="38" cy="78" rx="8" ry="3" fill="#9DBE9E" opacity="0.45" transform="rotate(-30 38 78)"/>
+          <ellipse cx="102" cy="78" rx="8" ry="3" fill="#9DBE9E" opacity="0.45" transform="rotate(30 102 78)"/>
+        </svg>
+      </div>
+      <p class="location-address">67 Robins Nest Drive<br/>L4H 3A8</p>
+      <a href="https://www.google.com/maps/search/?api=1&query=67+Robins+Nest+Drive+L4H+3A8"
+         target="_blank" rel="noopener" class="btn btn-rose">
+        📍 &nbsp;Open in Google Maps
+      </a>
+    </div>
+  </section>
+
+  <!-- DIVIDER -->
+  <div style="background:var(--warm-white); padding:10px 0;">
+    <div class="floral-divider">
+      <svg viewBox="0 0 400 50" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="25" x2="120" y2="25" stroke="#E8A3A3" stroke-width="0.7" opacity="0.4"/>
+        <path d="M140 10 Q134 24 140 38 Q146 24 140 10Z" fill="#F8D0C8" opacity="0.85"/>
+        <path d="M132 20 Q139 26 140 38 Q137 24 132 20Z" fill="#F5C4BC" opacity="0.78"/>
+        <path d="M148 20 Q141 26 140 38 Q143 24 148 20Z" fill="#F5C4BC" opacity="0.78"/>
+        <ellipse cx="165" cy="25" rx="14" ry="5.5" fill="#C5DEC2" opacity="0.55" transform="rotate(-20 165 25)"/>
+        <ellipse cx="200" cy="22" rx="18" ry="14" fill="#F5CECE" opacity="0.82"/>
+        <ellipse cx="200" cy="18" rx="12" ry="9" fill="#F0B8C0" opacity="0.88"/>
+        <ellipse cx="200" cy="15" rx="7" ry="6" fill="#E8A3A3" opacity="0.92"/>
+        <circle cx="200" cy="12" r="3.5" fill="#C97080"/>
+        <ellipse cx="235" cy="25" rx="14" ry="5.5" fill="#C5DEC2" opacity="0.55" transform="rotate(20 235 25)"/>
+        <path d="M260 10 Q254 24 260 38 Q266 24 260 10Z" fill="#F8D0C8" opacity="0.85"/>
+        <path d="M252 20 Q259 26 260 38 Q257 24 252 20Z" fill="#F5C4BC" opacity="0.78"/>
+        <path d="M268 20 Q261 26 260 38 Q263 24 268 20Z" fill="#F5C4BC" opacity="0.78"/>
+        <circle cx="185" cy="34" r="2" fill="#EEDDD8" opacity="0.65"/>
+        <circle cx="215" cy="34" r="2" fill="#EEDDD8" opacity="0.65"/>
+        <circle cx="140" cy="8" r="1.8" fill="#C9957A"/>
+        <circle cx="260" cy="8" r="1.8" fill="#C9957A"/>
+        <line x1="280" y1="25" x2="400" y2="25" stroke="#E8A3A3" stroke-width="0.7" opacity="0.4"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── COUNTDOWN ─────────────────────────────────────── -->
+  <section id="countdown">
+    <div class="reveal" style="text-align:center;margin-bottom:28px;">
+      <p class="section-label">The big day is almost here</p>
+      <h2 class="section-title">Counting Down</h2>
+    </div>
+    <div class="countdown-grid">
+      <div class="countdown-unit reveal">
+        <span class="countdown-number" id="cd-days">—</span>
+        <span class="countdown-label">Days</span>
+      </div>
+      <div class="countdown-unit reveal">
+        <span class="countdown-number" id="cd-hours">—</span>
+        <span class="countdown-label">Hours</span>
+      </div>
+      <div class="countdown-unit reveal">
+        <span class="countdown-number" id="cd-mins">—</span>
+        <span class="countdown-label">Minutes</span>
+      </div>
+      <div class="countdown-unit reveal">
+        <span class="countdown-number" id="cd-secs">—</span>
+        <span class="countdown-label">Seconds</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── GAME ──────────────────────────────────────────── -->
+  <section id="game-section">
+    <div class="reveal" style="text-align:center;margin-bottom:18px;">
+      <p class="section-label">Something fun</p>
+      <h2 class="section-title">While we wait to celebrate, pass the time by playing a game!</h2>
+    </div>
+    <div class="game-wrap reveal">
+      <p class="game-intro">Leap through 5 wild levels — from the goldfish's cove all the way up to the blue jay's sky! ✦</p>
+      <canvas id="fishGameCanvas" width="900" height="320"></canvas>
+      <button type="button" id="fish-jump-btn" class="btn btn-rose" style="margin-top:16px; width:100%; max-width:560px;">
+        Jump ♡
+      </button>
+      <div class="game-meta">
+        <span>Level: <b id="fish-level">1</b></span>
+        <span>Score: <b id="fish-score">0</b></span>
+        <span>Best: <b id="fish-best">0</b></span>
+      </div>
+      <p class="game-hint">Tap "Jump", tap the canvas, or press Space / ↑ · every 10 points levels you up!</p>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────────── -->
+  <footer>
+    <!-- Large footer bouquet -->
+    <svg viewBox="0 0 500 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;opacity:0.75;">
+      <path d="M10 70 Q120 20 250 40 Q380 60 490 20" stroke="#E8A3A3" stroke-width="1.2" fill="none" opacity="0.45"/>
+      <!-- stems up from path -->
+      <path d="M100 65 Q98 50 95 35" stroke="#9DBE9E" stroke-width="1.2" fill="none"/>
+      <path d="M250 42 Q250 30 250 15" stroke="#7A9E7E" stroke-width="1.4" fill="none"/>
+      <path d="M400 58 Q402 44 405 30" stroke="#9DBE9E" stroke-width="1.2" fill="none"/>
+      <!-- leaves -->
+      <ellipse cx="90" cy="48" rx="12" ry="4.5" fill="#7A9E7E" opacity="0.55" transform="rotate(-45 90 48)"/>
+      <ellipse cx="255" cy="30" rx="12" ry="4.5" fill="#7A9E7E" opacity="0.55" transform="rotate(-20 255 30)"/>
+      <ellipse cx="410" cy="44" rx="12" ry="4.5" fill="#7A9E7E" opacity="0.55" transform="rotate(45 410 44)"/>
+      <!-- peonies -->
+      <ellipse cx="55" cy="38" rx="18" ry="14" fill="#F5CECE" opacity="0.78"/>
+      <ellipse cx="55" cy="34" rx="12" ry="9" fill="#F0B8C0" opacity="0.85"/>
+      <circle cx="55" cy="30" r="5" fill="#C97080" opacity="0.8"/>
+      <ellipse cx="95" cy="26" rx="15" ry="12" fill="#F5CECE" opacity="0.75"/>
+      <ellipse cx="95" cy="23" rx="10" ry="8" fill="#E8A3A3" opacity="0.82"/>
+      <circle cx="95" cy="20" r="4" fill="#C97080" opacity="0.75"/>
+      <!-- center lily -->
+      <path d="M250 8 Q243 20 250 35 Q257 20 250 8Z" fill="#F8D0C8" opacity="0.88"/>
+      <path d="M240 18 Q249 23 250 35 Q246 22 240 18Z" fill="#F5C4BC" opacity="0.82"/>
+      <path d="M260 18 Q251 23 250 35 Q254 22 260 18Z" fill="#F5C4BC" opacity="0.82"/>
+      <path d="M236 28 Q249 30 250 35 Q247 28 236 28Z" fill="#F5C4BC" opacity="0.75"/>
+      <path d="M264 28 Q251 30 250 35 Q253 28 264 28Z" fill="#F5C4BC" opacity="0.75"/>
+      <circle cx="250" cy="6" r="2.2" fill="#C9957A"/>
+      <circle cx="244" cy="15" r="1.5" fill="#C97080" opacity="0.65"/>
+      <circle cx="256" cy="15" r="1.5" fill="#C97080" opacity="0.65"/>
+      <!-- right peonies -->
+      <ellipse cx="405" cy="22" rx="15" ry="12" fill="#F5CECE" opacity="0.75"/>
+      <ellipse cx="405" cy="19" rx="10" ry="8" fill="#E8A3A3" opacity="0.82"/>
+      <circle cx="405" cy="16" r="4" fill="#C97080" opacity="0.75"/>
+      <ellipse cx="445" cy="32" rx="18" ry="14" fill="#F5CECE" opacity="0.78"/>
+      <ellipse cx="445" cy="28" rx="12" ry="9" fill="#F0B8C0" opacity="0.85"/>
+      <circle cx="445" cy="24" r="5" fill="#C97080" opacity="0.8"/>
+      <!-- baby's breath -->
+      <circle cx="35" cy="50" r="2.5" fill="#EEDDD8" opacity="0.7"/>
+      <circle cx="75" cy="50" r="2" fill="#EEDDD8" opacity="0.65"/>
+      <circle cx="120" cy="44" r="2.2" fill="#EEDDD8" opacity="0.65"/>
+      <circle cx="230" cy="38" r="2" fill="#EEDDD8" opacity="0.6"/>
+      <circle cx="270" cy="38" r="2" fill="#EEDDD8" opacity="0.6"/>
+      <circle cx="380" cy="46" r="2.2" fill="#EEDDD8" opacity="0.65"/>
+      <circle cx="425" cy="44" r="2" fill="#EEDDD8" opacity="0.65"/>
+      <circle cx="465" cy="50" r="2.5" fill="#EEDDD8" opacity="0.7"/>
+    </svg>
+
+    <p class="footer-text">Can't wait to celebrate with you ♡</p>
+    <p class="footer-sub" style="margin-top:6px;">August 15th, 2026 &nbsp;·&nbsp; Amana's Birthday Bash</p>
+    <p class="footer-sub" style="margin-top:18px; font-style: normal;">
+      Questions? Text or call me at
+      <a href="tel:6479046574" style="color: var(--deep-rose); text-decoration: none; font-weight: 700; letter-spacing: 0.05em;">647-904-6574</a>
+    </p>
+  </footer>
+
+</main>
+
+<script>
+  // ── PASSCODE ─────────────────────────────────────────
+  const PASSCODE = "bday21";
+
+  // Generate passcode screen background petals
+  (function() {
+    const container = document.getElementById('pc-petals');
+    const petalDefs = [
+      // small peony circle
+      (x, y, s) => `<circle cx="${x}" cy="${y}" r="${10*s}" fill="#F5CECE" opacity="0.5"/><circle cx="${x}" cy="${y}" r="${6*s}" fill="#E8A3A3" opacity="0.55"/><circle cx="${x}" cy="${y}" r="${3*s}" fill="#C97080" opacity="0.6"/>`,
+      // lily petal shape
+      (x, y, s) => `<path d="M${x} ${y-18*s} Q${x-6*s} ${y} ${x} ${y+12*s} Q${x+6*s} ${y} ${x} ${y-18*s}Z" fill="#F8D0C8" opacity="0.55"/>`,
+      // baby's breath dot
+      (x, y, s) => `<circle cx="${x}" cy="${y}" r="${4*s}" fill="#EEDDD8" opacity="0.6"/>`,
+    ];
+    for (let i = 0; i < 18; i++) {
+      const left = Math.random() * 100;
+      const dur  = 8 + Math.random() * 12;
+      const delay = Math.random() * 10;
+      const size = 0.5 + Math.random() * 0.8;
+      const type = Math.floor(Math.random() * petalDefs.length);
+      const svg = `<svg width="${40*size}" height="${40*size}" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">${petalDefs[type](20,20,size)}</svg>`;
+      const el = document.createElement('div');
+      el.className = 'pc-petal';
+      el.style.cssText = `left:${left}%;bottom:0;animation-duration:${dur}s;animation-delay:${delay}s;`;
+      el.innerHTML = svg;
+      container.appendChild(el);
+    }
+  })();
+
+  function checkPasscode() {
+    const val   = document.getElementById('pc-field').value.trim();
+    const err   = document.getElementById('pc-error');
+    const field = document.getElementById('pc-field');
+    if (val.toLowerCase() === PASSCODE.toLowerCase()) {
+      document.getElementById('passcode-screen').classList.add('hidden');
+      setTimeout(() => {
+        document.getElementById('passcode-screen').style.display = 'none';
+        document.getElementById('main-site').style.display = 'block';
+        initAmbient();
+        initReveal();
+        initCountdown();
+        initFishGame();
+      }, 800);
+    } else {
+      err.textContent = "Hmm, that doesn't seem right — try again!";
+      field.classList.add('shake');
+      setTimeout(() => field.classList.remove('shake'), 500);
+    }
+  }
+  document.getElementById('pc-field').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPasscode();
+    document.getElementById('pc-error').textContent = '';
+  });
+
+  // ── AMBIENT FLOATING FLOWERS — hero only, side borders ──────
+  function initAmbient() {
+    const layer = document.getElementById('ambient-layer');
+    if (!layer) return;
+
+    // SVG fragments
+    const svgs = [
+      // stargazer lily (vibrant deep pink)
+      `<svg width="40" height="50" viewBox="0 0 40 50" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 4 Q14 18 20 34 Q26 18 20 4Z" fill="#C97080" opacity="0.85"/>
+        <path d="M8 12 Q18 22 20 34 Q15 20 8 12Z" fill="#C97080" opacity="0.8"/>
+        <path d="M32 12 Q22 22 20 34 Q25 20 32 12Z" fill="#C97080" opacity="0.8"/>
+        <path d="M5 24 Q18 26 20 34 Q15 25 5 24Z" fill="#B86070" opacity="0.75"/>
+        <path d="M35 24 Q22 26 20 34 Q25 25 35 24Z" fill="#B86070" opacity="0.75"/>
+        <circle cx="16" cy="20" r="1.3" fill="#7A2040" opacity="0.65"/>
+        <circle cx="24" cy="20" r="1.3" fill="#7A2040" opacity="0.65"/>
+        <line x1="20" y1="34" x2="15" y2="17" stroke="#C9957A" stroke-width="0.9"/>
+        <line x1="20" y1="34" x2="25" y2="17" stroke="#C9957A" stroke-width="0.9"/>
+        <circle cx="15" cy="16" r="2" fill="#C9957A"/>
+        <circle cx="25" cy="16" r="2" fill="#C9957A"/>
+      </svg>`,
+      // peony
+      `<svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="18" cy="18" r="14" fill="#F5CECE" opacity="0.7"/>
+        <circle cx="18" cy="17" r="10" fill="#F0B8C0" opacity="0.75"/>
+        <circle cx="18" cy="16" r="6"  fill="#E8A3A3" opacity="0.82"/>
+        <circle cx="18" cy="15" r="3"  fill="#C97080" opacity="0.85"/>
+      </svg>`,
+      // baby's breath cluster
+      `<svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="14" cy="14" r="5" fill="#EEDDD8" opacity="0.85"/>
+        <circle cx="6"  cy="9"  r="3.5" fill="#EEDDD8" opacity="0.7"/>
+        <circle cx="22" cy="9"  r="3.5" fill="#EEDDD8" opacity="0.7"/>
+        <circle cx="8"  cy="21" r="3"   fill="#EEDDD8" opacity="0.65"/>
+        <circle cx="20" cy="21" r="3"   fill="#EEDDD8" opacity="0.65"/>
+      </svg>`,
+      // leaf
+      `<svg width="30" height="22" viewBox="0 0 30 22" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="15" cy="11" rx="14" ry="9" fill="#9DBE9E" opacity="0.6"/>
+        <line x1="15" y1="2" x2="15" y2="20" stroke="#7A9E7E" stroke-width="1.2" opacity="0.55"/>
+      </svg>`,
+      // small stargazer (warm orange-pink like photo)
+      `<svg width="34" height="44" viewBox="0 0 34 44" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 4 Q12 16 17 30 Q22 16 17 4Z" fill="#E8906A" opacity="0.82"/>
+        <path d="M7 12 Q15 20 17 30 Q13 18 7 12Z" fill="#E8906A" opacity="0.78"/>
+        <path d="M27 12 Q19 20 17 30 Q21 18 27 12Z" fill="#E8906A" opacity="0.78"/>
+        <path d="M5 22 Q15 24 17 30 Q13 23 5 22Z" fill="#D4784A" opacity="0.72"/>
+        <path d="M29 22 Q19 24 17 30 Q21 23 29 22Z" fill="#D4784A" opacity="0.72"/>
+        <circle cx="14" cy="18" r="1.2" fill="#8B3020" opacity="0.6"/>
+        <circle cx="20" cy="18" r="1.2" fill="#8B3020" opacity="0.6"/>
+        <line x1="17" y1="30" x2="13" y2="15" stroke="#C9957A" stroke-width="0.8"/>
+        <line x1="17" y1="30" x2="21" y2="15" stroke="#C9957A" stroke-width="0.8"/>
+        <circle cx="13" cy="14" r="1.8" fill="#C9957A"/>
+        <circle cx="21" cy="14" r="1.8" fill="#C9957A"/>
+      </svg>`,
+    ];
+
+    // Spawn only in left (0–8%) and right (92–100%) strips, confined to the hero section
+    for (let i = 0; i < 16; i++) {
+      const isLeft  = i < 8;
+      const pct     = isLeft
+        ? (Math.random() * 8)           // 0–8% from left
+        : (92 + Math.random() * 8);     // 92–100% from left
+      const dur     = 12 + Math.random() * 14;
+      const delay   = Math.random() * 14;
+      const idx     = Math.floor(Math.random() * svgs.length);
+      const el      = document.createElement('div');
+      el.className  = 'ambient-float ' + (isLeft ? 'side-left' : 'side-right');
+      el.style.cssText = `left:${pct}%;bottom:${-8 - Math.random()*12}%;animation-duration:${dur}s;animation-delay:${delay}s;`;
+      el.innerHTML  = svgs[idx];
+      layer.appendChild(el);
+    }
+
+    // ── FIXED STARGAZER LILY ACCENTS, confined to the hero ──────
+    // Positioned to avoid overlapping the existing corner bouquets
+    // (which occupy roughly the top 220px and bottom 180px on each side).
+    const lilyPositions = [
+      { side:'left:-10px', top:'40%',  size:80,  rot:-14, anim:'lilyPulse 3.6s ease-in-out infinite alternate' },
+      { side:'left:-12px', top:'58%',  size:70,  rot:-18, anim:'lilyPulse 4.0s ease-in-out infinite alternate-reverse' },
+      { side:'right:-10px', top:'36%', size:78,  rot:16,  anim:'lilyPulse 3.9s ease-in-out infinite alternate-reverse' },
+      { side:'right:-12px', top:'55%', size:68,  rot:12,  anim:'lilyPulse 3.3s ease-in-out infinite alternate' },
+    ];
+
+    lilyPositions.forEach(p => {
+      const el = document.createElement('div');
+      el.className = 'lily-border';
+      el.style.cssText = `${p.side};top:${p.top};animation:${p.anim};`;
+
+      // Stargazer lily SVG, deep vibrant pink matching photo
+      const w = p.size, h = Math.round(p.size * 1.3);
+      const cx = w/2, cy = h * 0.58;
+      const r = Math.round(p.rot);
+      el.innerHTML = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="transform:rotate(${r}deg);">
+        <!-- petals -->
+        <path d="M${cx} ${cy*0.18} Q${cx-w*0.13} ${cy*0.55} ${cx} ${cy} Q${cx+w*0.13} ${cy*0.55} ${cx} ${cy*0.18}Z" fill="#D4607A" opacity="0.88"/>
+        <path d="M${cx-w*0.38} ${cy*0.40} Q${cx-w*0.08} ${cy*0.62} ${cx} ${cy} Q${cx-w*0.14} ${cy*0.56} ${cx-w*0.38} ${cy*0.40}Z" fill="#D4607A" opacity="0.84"/>
+        <path d="M${cx+w*0.38} ${cy*0.40} Q${cx+w*0.08} ${cy*0.62} ${cx} ${cy} Q${cx+w*0.14} ${cy*0.56} ${cx+w*0.38} ${cy*0.40}Z" fill="#D4607A" opacity="0.84"/>
+        <path d="M${cx-w*0.44} ${cy*0.70} Q${cx-w*0.10} ${cy*0.76} ${cx} ${cy} Q${cx-w*0.12} ${cy*0.72} ${cx-w*0.44} ${cy*0.70}Z" fill="#C05068" opacity="0.80"/>
+        <path d="M${cx+w*0.44} ${cy*0.70} Q${cx+w*0.10} ${cy*0.76} ${cx} ${cy} Q${cx+w*0.12} ${cy*0.72} ${cx+w*0.44} ${cy*0.70}Z" fill="#C05068" opacity="0.80"/>
+        <!-- white centre stripe per petal -->
+        <path d="M${cx} ${cy*0.22} Q${cx+2} ${cy*0.50} ${cx} ${cy}" stroke="#FFF0F0" stroke-width="1.5" fill="none" opacity="0.55"/>
+        <!-- spots -->
+        <circle cx="${cx-w*0.06}" cy="${cy*0.52}" r="${w*0.032}" fill="#7A1030" opacity="0.55"/>
+        <circle cx="${cx+w*0.06}" cy="${cy*0.52}" r="${w*0.032}" fill="#7A1030" opacity="0.55"/>
+        <circle cx="${cx}"        cy="${cy*0.40}" r="${w*0.025}" fill="#7A1030" opacity="0.48"/>
+        <circle cx="${cx-w*0.10}" cy="${cy*0.62}" r="${w*0.022}" fill="#7A1030" opacity="0.42"/>
+        <circle cx="${cx+w*0.10}" cy="${cy*0.62}" r="${w*0.022}" fill="#7A1030" opacity="0.42"/>
+        <!-- stamens -->
+        <line x1="${cx}" y1="${cy}" x2="${cx-w*0.14}" y2="${cy*0.38}" stroke="#C9957A" stroke-width="1.2"/>
+        <line x1="${cx}" y1="${cy}" x2="${cx+w*0.14}" y2="${cy*0.38}" stroke="#C9957A" stroke-width="1.2"/>
+        <line x1="${cx}" y1="${cy}" x2="${cx}"        y2="${cy*0.30}" stroke="#C9957A" stroke-width="1.2"/>
+        <circle cx="${cx-w*0.14}" cy="${cy*0.36}" r="${w*0.04}" fill="#C9957A"/>
+        <circle cx="${cx+w*0.14}" cy="${cy*0.36}" r="${w*0.04}" fill="#C9957A"/>
+        <circle cx="${cx}"        cy="${cy*0.28}" r="${w*0.04}" fill="#C9957A"/>
+        <!-- stem + leaf -->
+        <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${h}" stroke="#7A9E7E" stroke-width="2.5"/>
+        <ellipse cx="${cx-w*0.18}" cy="${cy*1.22}" rx="${w*0.22}" ry="${w*0.08}" fill="#7A9E7E" opacity="0.65" transform="rotate(-35 ${cx-w*0.18} ${cy*1.22})"/>
+      </svg>`;
+      layer.appendChild(el);
+    });
+  }
+
+  // ── SCROLL REVEAL ──────────────────────────────────────
+  function initReveal() {
+    const items = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.10 });
+    items.forEach(el => obs.observe(el));
+  }
+
+  // ── COUNTDOWN ─────────────────────────────────────────
+  function initCountdown() {
+    const target = new Date('2026-08-15T16:00:00');
+    function tick() {
+      const diff = target - new Date();
+      if (diff <= 0) {
+        ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => document.getElementById(id).textContent = '00');
+        return;
+      }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      document.getElementById('cd-days').textContent  = String(d).padStart(2,'0');
+      document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+      document.getElementById('cd-mins').textContent  = String(m).padStart(2,'0');
+      document.getElementById('cd-secs').textContent  = String(s).padStart(2,'0');
+    }
+    tick(); setInterval(tick, 1000);
+  }
+
+  // ── 5-LEVEL JUMP GAME: Goldfish → Alley Cat → Lion → Snow Leopard → Blue Jay ──
+  function initFishGame() {
+    const canvas = document.getElementById('fishGameCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const W = canvas.width, H = canvas.height;
+    const groundY = H - 56;
+
+    // ── Level definitions ──────────────────────────────
+    const LEVELS = [
+      {
+        name: 'Level 1 · Goldfish Cove',
+        bg: 'linear-gradient(180deg, #cdeefc 0%, #aee0f5 60%, #8fd0ea 100%)',
+        floor: '#dcc79a', floorLine: 'rgba(122,158,126,0.45)',
+        character: 'fish',
+        obstacles: ['seaweed', 'seaweedTall', 'rock', 'urchin'],
+        speed: 5.5, spawnBase: 70
+      },
+      {
+        name: 'Level 2 · Alley Cat',
+        bg: 'linear-gradient(180deg, #c7d3dc 0%, #9aabb6 58%, #798993 100%)',
+        floor: '#5e5e62', floorLine: 'rgba(255,255,255,0.18)',
+        character: 'cat',
+        obstacles: ['trash', 'box', 'puddle'],
+        speed: 6.6, spawnBase: 60
+      },
+      {
+        name: 'Level 3 · African Safari',
+        bg: 'linear-gradient(180deg, #ffe9ab 0%, #ffd27c 55%, #e7ad5b 100%)',
+        floor: '#c79a52', floorLine: 'rgba(255,255,255,0.22)',
+        character: 'lion',
+        obstacles: ['rockSavanna', 'bush', 'log'],
+        speed: 7.6, spawnBase: 52
+      },
+      {
+        name: 'Level 4 · Snowy Peaks',
+        bg: 'linear-gradient(180deg, #eaf6fc 0%, #d2eaf6 55%, #b6dbef 100%)',
+        floor: '#f1f8fc', floorLine: 'rgba(140,175,200,0.45)',
+        character: 'leopard',
+        obstacles: ['snowdrift', 'iceRock', 'pineStump'],
+        speed: 8.6, spawnBase: 46
+      },
+      {
+        name: 'Level 5 · Skyward Jay',
+        bg: 'linear-gradient(180deg, #bfe3ff 0%, #9ed0fb 55%, #7dc0f5 100%)',
+        floor: '#cdeac6', floorLine: 'rgba(255,255,255,0.35)',
+        character: 'jay',
+        obstacles: ['cloud', 'branch', 'kite'],
+        speed: 9.6, spawnBase: 40
+      }
+    ];
+
+    const OBSTACLE_SIZES = {
+      seaweed: { w: 18, h: 46 }, seaweedTall: { w: 16, h: 70 }, rock: { w: 40, h: 26 }, urchin: { w: 26, h: 24 },
+      trash: { w: 30, h: 42 }, box: { w: 36, h: 30 }, puddle: { w: 48, h: 14 },
+      rockSavanna: { w: 42, h: 28 }, bush: { w: 46, h: 30 }, log: { w: 50, h: 20 },
+      snowdrift: { w: 48, h: 24 }, iceRock: { w: 34, h: 30 }, pineStump: { w: 30, h: 36 },
+      cloud: { w: 52, h: 24 }, branch: { w: 46, h: 16 }, kite: { w: 30, h: 32 }
+    };
+
+    function levelIndexForScore(s) { return Math.min(LEVELS.length - 1, Math.floor(s / 10)); }
+
+    let running = false;
+    let gameOver = false;
+    let started = false;
+    let speed = LEVELS[0].speed;
+    let frame = 0;
+    let score = 0;
+    let bestScore = 0;
+    let levelIdx = 0;
+    let levelBannerTimer = 0;
+
+    const fish = {
+      x: 90, y: groundY, w: 54, h: 30,
+      vy: 0, jumping: false, baseY: groundY,
+      gravity: 0.85, jumpVel: -13.5,
+      tailPhase: 0
+    };
+
+    let obstacles = [];
+    let bubbles = [];
+
+    function setLevelVisuals(idx) {
+      canvas.style.background = LEVELS[idx].bg;
+    }
+
+    function spawnObstacle() {
+      const level = LEVELS[levelIdx];
+      const kind = level.obstacles[Math.floor(Math.random() * level.obstacles.length)];
+      const size = OBSTACLE_SIZES[kind];
+      obstacles.push({ x: W + 20, y: groundY - size.h + 30, w: size.w, h: size.h, kind, passed: false });
+    }
+
+    function spawnBubble() {
+      bubbles.push({
+        x: Math.random() * W,
+        y: H + 10,
+        r: 3 + Math.random() * 6,
+        vy: 0.6 + Math.random() * 1.2,
+        drift: (Math.random() - 0.5) * 0.6
+      });
+    }
+
+    function resetGame() {
+      obstacles = [];
+      bubbles = [];
+      fish.y = fish.baseY;
+      fish.vy = 0;
+      fish.jumping = false;
+      levelIdx = 0;
+      speed = LEVELS[0].speed;
+      frame = 0;
+      score = 0;
+      gameOver = false;
+      running = true;
+      started = true;
+      levelBannerTimer = 80;
+      setLevelVisuals(0);
+      document.getElementById('fish-score').textContent = '0';
+      document.getElementById('fish-level').textContent = '1';
+    }
+
+    function doJump() {
+      if (gameOver) { resetGame(); return; }
+      if (!started) { resetGame(); return; }
+      if (!fish.jumping) {
+        fish.jumping = true;
+        fish.vy = fish.jumpVel;
+      }
+    }
+
+    canvas.addEventListener('click', doJump);
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      doJump();
+    }, { passive: false });
+
+    const jumpBtn = document.getElementById('fish-jump-btn');
+    if (jumpBtn) {
+      jumpBtn.addEventListener('click', (e) => { e.preventDefault(); doJump(); });
+      jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); doJump(); }, { passive: false });
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.code === 'Space' || e.code === 'ArrowUp') && isInViewport(canvas)) {
+        e.preventDefault();
+        doJump();
+      }
+    });
+
+    function isInViewport(el) {
+      const rect = el.getBoundingClientRect();
+      return rect.top < window.innerHeight && rect.bottom > 0;
+    }
+
+    function rectsOverlap(a, b) {
+      return a.x < b.x + b.w * 0.7 &&
+             a.x + a.w * 0.7 > b.x &&
+             a.y < b.y + b.h &&
+             a.y + a.h > b.y + 6;
+    }
+
+    // ── Character drawing (one box, swapped art per level) ──
+    function drawCharacter(x, y) {
+      const kind = LEVELS[levelIdx].character;
+      if (kind === 'fish') drawFish(x, y);
+      else if (kind === 'cat') drawCat(x, y);
+      else if (kind === 'lion') drawLion(x, y);
+      else if (kind === 'leopard') drawLeopard(x, y);
+      else drawJay(x, y);
+    }
+
+    function drawFish(x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+      const wob = Math.sin(fish.tailPhase) * 4;
+      ctx.beginPath();
+      ctx.moveTo(-fish.w * 0.45, 0);
+      ctx.lineTo(-fish.w * 0.75, -10 + wob);
+      ctx.lineTo(-fish.w * 0.75, 10 + wob);
+      ctx.closePath();
+      ctx.fillStyle = '#E8906A';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(0, 0, fish.w * 0.42, fish.h * 0.5, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#F4A969';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(2, 3, fish.w * 0.30, fish.h * 0.30, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#F8C28A';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(-4, -fish.h * 0.42);
+      ctx.lineTo(6, -fish.h * 0.78);
+      ctx.lineTo(14, -fish.h * 0.38);
+      ctx.closePath();
+      ctx.fillStyle = '#D4607A';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(-2, fish.h * 0.15);
+      ctx.lineTo(-10, fish.h * 0.55 + wob * 0.4);
+      ctx.lineTo(6, fish.h * 0.25);
+      ctx.closePath();
+      ctx.fillStyle = '#D4607A';
+      ctx.globalAlpha = 0.85;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.beginPath();
+      ctx.arc(fish.w * 0.22, -fish.h * 0.08, 3.4, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(fish.w * 0.25, -fish.h * 0.08, 1.6, 0, Math.PI * 2);
+      ctx.fillStyle = '#5A3A3A';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(fish.w * 0.40, 4, 2.4, 0, Math.PI);
+      ctx.strokeStyle = '#C9706a';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawCat(x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+      const bob = Math.sin(fish.tailPhase) * 2;
+      // tail
+      ctx.strokeStyle = '#3a3a3a';
+      ctx.lineWidth = 6;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-fish.w * 0.40, 4);
+      ctx.quadraticCurveTo(-fish.w * 0.75, -6 + bob, -fish.w * 0.70, -fish.h * 0.7);
+      ctx.stroke();
+      // body
+      ctx.fillStyle = '#454545';
+      ctx.beginPath();
+      ctx.ellipse(-2, 4, fish.w * 0.40, fish.h * 0.42, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // head
+      ctx.beginPath();
+      ctx.ellipse(fish.w * 0.30, -fish.h * 0.25, fish.w * 0.22, fish.h * 0.32, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#4f4f4f';
+      ctx.fill();
+      // ears
+      ctx.beginPath();
+      ctx.moveTo(fish.w * 0.16, -fish.h * 0.5);
+      ctx.lineTo(fish.w * 0.22, -fish.h * 0.78);
+      ctx.lineTo(fish.w * 0.30, -fish.h * 0.48);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(fish.w * 0.32, -fish.h * 0.5);
+      ctx.lineTo(fish.w * 0.40, -fish.h * 0.76);
+      ctx.lineTo(fish.w * 0.46, -fish.h * 0.46);
+      ctx.closePath();
+      ctx.fill();
+      // legs
+      ctx.fillStyle = '#3a3a3a';
+      ctx.fillRect(-fish.w * 0.05, fish.h * 0.25, 6, 12);
+      ctx.fillRect(fish.w * 0.18, fish.h * 0.25, 6, 12);
+      // eye + nose
+      ctx.beginPath();
+      ctx.arc(fish.w * 0.34, -fish.h * 0.28, 2, 0, Math.PI * 2);
+      ctx.fillStyle = '#9be08a';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(fish.w * 0.46, -fish.h * 0.16, 1.6, 0, Math.PI * 2);
+      ctx.fillStyle = '#e89aa0';
+      ctx.fill();
+      // whiskers
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(fish.w * 0.40, -fish.h * 0.14); ctx.lineTo(fish.w * 0.60, -fish.h * 0.18);
+      ctx.moveTo(fish.w * 0.40, -fish.h * 0.08); ctx.lineTo(fish.w * 0.60, -fish.h * 0.04);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawLion(x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+      const bob = Math.sin(fish.tailPhase) * 3;
+      // tail with tuft
+      ctx.strokeStyle = '#c98a4a';
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-fish.w * 0.42, 2);
+      ctx.quadraticCurveTo(-fish.w * 0.85, -2 + bob, -fish.w * 0.95, -fish.h * 0.35);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(-fish.w * 0.95, -fish.h * 0.35, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#7a4a2a';
+      ctx.fill();
+      // body
+      ctx.fillStyle = '#d99a52';
+      ctx.beginPath();
+      ctx.ellipse(0, 4, fish.w * 0.45, fish.h * 0.46, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // mane
+      ctx.fillStyle = '#a85f2a';
+      ctx.beginPath();
+      ctx.arc(fish.w * 0.30, -fish.h * 0.18, fish.w * 0.26, 0, Math.PI * 2);
+      ctx.fill();
+      // head
+      ctx.fillStyle = '#e0a868';
+      ctx.beginPath();
+      ctx.ellipse(fish.w * 0.30, -fish.h * 0.18, fish.w * 0.18, fish.h * 0.24, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // ears
+      ctx.fillStyle = '#a85f2a';
+      ctx.beginPath(); ctx.arc(fish.w * 0.18, -fish.h * 0.42, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(fish.w * 0.40, -fish.h * 0.42, 4, 0, Math.PI * 2); ctx.fill();
+      // legs
+      ctx.fillStyle = '#c98a4a';
+      ctx.fillRect(-fish.w * 0.10, fish.h * 0.30, 7, 13);
+      ctx.fillRect(fish.w * 0.18, fish.h * 0.30, 7, 13);
+      // face
+      ctx.beginPath();
+      ctx.arc(fish.w * 0.38, -fish.h * 0.20, 2, 0, Math.PI * 2);
+      ctx.fillStyle = '#3a2a1a';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(fish.w * 0.46, -fish.h * 0.10, 2.6, 1.8, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#5a3a2a';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawLeopard(x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+      const bob = Math.sin(fish.tailPhase) * 3;
+      // tail
+      ctx.strokeStyle = '#e8eef2';
+      ctx.lineWidth = 6;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-fish.w * 0.40, 2);
+      ctx.quadraticCurveTo(-fish.w * 0.80, -4 + bob, -fish.w * 0.72, -fish.h * 0.55);
+      ctx.stroke();
+      // body
+      ctx.fillStyle = '#eef4f7';
+      ctx.beginPath();
+      ctx.ellipse(0, 4, fish.w * 0.44, fish.h * 0.44, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // head
+      ctx.beginPath();
+      ctx.ellipse(fish.w * 0.30, -fish.h * 0.18, fish.w * 0.20, fish.h * 0.26, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // ears
+      ctx.fillStyle = '#e0e8ec';
+      ctx.beginPath(); ctx.arc(fish.w * 0.18, -fish.h * 0.42, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(fish.w * 0.40, -fish.h * 0.42, 4, 0, Math.PI * 2); ctx.fill();
+      // legs
+      ctx.fillStyle = '#dde6ea';
+      ctx.fillRect(-fish.w * 0.10, fish.h * 0.28, 7, 13);
+      ctx.fillRect(fish.w * 0.18, fish.h * 0.28, 7, 13);
+      // rosette spots
+      ctx.fillStyle = '#6b7a86';
+      const spots = [[-10,2],[4,-2],[-18,-8],[10,8],[-4,10],[fish.w*0.30-4,-fish.h*0.10],[fish.w*0.24,-fish.h*0.30]];
+      spots.forEach(p => { ctx.beginPath(); ctx.arc(p[0], p[1], 2.4, 0, Math.PI * 2); ctx.fill(); });
+      // eye
+      ctx.beginPath();
+      ctx.arc(fish.w * 0.38, -fish.h * 0.20, 1.8, 0, Math.PI * 2);
+      ctx.fillStyle = '#5fb0c9';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawJay(x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+      const flap = Math.sin(fish.tailPhase * 1.8) * 10;
+      // tail feathers
+      ctx.fillStyle = '#3a6fb0';
+      ctx.beginPath();
+      ctx.moveTo(-fish.w * 0.40, 0);
+      ctx.lineTo(-fish.w * 0.70, -8);
+      ctx.lineTo(-fish.w * 0.70, 8);
+      ctx.closePath();
+      ctx.fill();
+      // body
+      ctx.fillStyle = '#5b8fd6';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, fish.w * 0.40, fish.h * 0.46, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // belly
+      ctx.fillStyle = '#eef3f8';
+      ctx.beginPath();
+      ctx.ellipse(2, 5, fish.w * 0.26, fish.h * 0.26, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // wing (flapping)
+      ctx.fillStyle = '#3a6fb0';
+      ctx.beginPath();
+      ctx.moveTo(-2, -4);
+      ctx.quadraticCurveTo(-fish.w * 0.15, -fish.h * 0.6 - flap, fish.w * 0.10, -fish.h * 0.15);
+      ctx.quadraticCurveTo(-fish.w * 0.05, fish.h * 0.05, -2, -4);
+      ctx.fill();
+      // head
+      ctx.fillStyle = '#5b8fd6';
+      ctx.beginPath();
+      ctx.arc(fish.w * 0.28, -fish.h * 0.30, fish.w * 0.16, 0, Math.PI * 2);
+      ctx.fill();
+      // crest
+      ctx.beginPath();
+      ctx.moveTo(fish.w * 0.22, -fish.h * 0.55);
+      ctx.lineTo(fish.w * 0.30, -fish.h * 0.78);
+      ctx.lineTo(fish.w * 0.36, -fish.h * 0.50);
+      ctx.closePath();
+      ctx.fill();
+      // beak
+      ctx.fillStyle = '#3a3a3a';
+      ctx.beginPath();
+      ctx.moveTo(fish.w * 0.42, -fish.h * 0.30);
+      ctx.lineTo(fish.w * 0.56, -fish.h * 0.24);
+      ctx.lineTo(fish.w * 0.42, -fish.h * 0.20);
+      ctx.closePath();
+      ctx.fill();
+      // eye
+      ctx.beginPath();
+      ctx.arc(fish.w * 0.30, -fish.h * 0.32, 1.8, 0, Math.PI * 2);
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // ── Obstacle drawing ──────────────────────────────
+    function drawObstacle(o) {
+      switch (o.kind) {
+        case 'seaweed': case 'seaweedTall': drawSeaweed(o); break;
+        case 'rock': drawRock(o); break;
+        case 'urchin': drawUrchin(o); break;
+        case 'trash': drawTrash(o); break;
+        case 'box': drawBox(o); break;
+        case 'puddle': drawPuddle(o); break;
+        case 'rockSavanna': drawRockSavanna(o); break;
+        case 'bush': drawBush(o); break;
+        case 'log': drawLog(o); break;
+        case 'snowdrift': drawSnowdrift(o); break;
+        case 'iceRock': drawIceRock(o); break;
+        case 'pineStump': drawPineStump(o); break;
+        case 'cloud': drawCloud(o); break;
+        case 'branch': drawBranch(o); break;
+        case 'kite': drawKite(o); break;
+      }
+    }
+
+    function drawSeaweed(o) {
+      ctx.save();
+      ctx.translate(o.x, o.y + o.h);
+      ctx.strokeStyle = '#5A8A5E';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      const sway = Math.sin(frame * 0.06 + o.x * 0.05) * 6;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(sway, -o.h * 0.5, 0, -o.h);
+      ctx.stroke();
+      ctx.strokeStyle = '#7AA87E';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(-3, -4);
+      ctx.quadraticCurveTo(sway - 8, -o.h * 0.55, -2, -o.h * 0.8);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(3, -4);
+      ctx.quadraticCurveTo(sway + 8, -o.h * 0.45, 2, -o.h * 0.75);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawRock(o) {
+      ctx.save();
+      ctx.fillStyle = '#9a8e84';
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2, o.y + o.h * 0.6, o.w * 0.55, o.h * 0.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#b3a698';
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2 - 4, o.y + o.h * 0.45, o.w * 0.32, o.h * 0.28, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawUrchin(o) {
+      ctx.save();
+      const cx = o.x + o.w / 2, cy = o.y + o.h / 2 + 6;
+      ctx.strokeStyle = '#7a5a8a';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 12; i++) {
+        const ang = (i / 12) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(ang) * (o.w * 0.5), cy + Math.sin(ang) * (o.h * 0.5));
+        ctx.stroke();
+      }
+      ctx.fillStyle = '#9a6fae';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawTrash(o) {
+      ctx.save();
+      ctx.fillStyle = '#7a8088';
+      ctx.fillRect(o.x, o.y + 8, o.w, o.h - 8);
+      ctx.fillStyle = '#5e646b';
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2, o.y + 8, o.w / 2, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#4a4f55';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(o.x + 4, o.y + 14); ctx.lineTo(o.x + 4, o.y + o.h); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(o.x + o.w - 4, o.y + 14); ctx.lineTo(o.x + o.w - 4, o.y + o.h); ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawBox(o) {
+      ctx.save();
+      ctx.fillStyle = '#c19a6b';
+      ctx.fillRect(o.x, o.y, o.w, o.h);
+      ctx.strokeStyle = '#8a6a44';
+      ctx.lineWidth = 1.4;
+      ctx.strokeRect(o.x, o.y, o.w, o.h);
+      ctx.beginPath();
+      ctx.moveTo(o.x, o.y + o.h / 2); ctx.lineTo(o.x + o.w, o.y + o.h / 2);
+      ctx.moveTo(o.x + o.w / 2, o.y); ctx.lineTo(o.x + o.w / 2, o.y + o.h);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawPuddle(o) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(120,150,170,0.55)';
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2, o.y + o.h, o.w / 2, o.h / 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(220,235,240,0.6)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2, o.y + o.h, o.w * 0.3, o.h * 0.25, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawRockSavanna(o) {
+      ctx.save();
+      ctx.fillStyle = '#a87d4a';
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2, o.y + o.h * 0.6, o.w * 0.55, o.h * 0.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#c2925c';
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2 - 4, o.y + o.h * 0.42, o.w * 0.32, o.h * 0.26, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawBush(o) {
+      ctx.save();
+      ctx.fillStyle = '#5e8a4a';
+      [[-10,0,12],[8,-4,14],[0,-10,11],[-2,6,10]].forEach(p => {
+        ctx.beginPath();
+        ctx.arc(o.x + o.w / 2 + p[0], o.y + o.h - 4 + p[1], p[2], 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function drawLog(o) {
+      ctx.save();
+      ctx.fillStyle = '#7a5230';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(o.x, o.y + o.h * 0.3, o.w, o.h * 0.7, 8) : ctx.rect(o.x, o.y + o.h * 0.3, o.w, o.h * 0.7);
+      ctx.fill();
+      ctx.fillStyle = '#5e3f24';
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w - 4, o.y + o.h * 0.65, 6, o.h * 0.32, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawSnowdrift(o) {
+      ctx.save();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2, o.y + o.h, o.w * 0.55, o.h * 0.6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(150,180,200,0.4)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2, o.y + o.h * 0.85, o.w * 0.4, o.h * 0.3, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawIceRock(o) {
+      ctx.save();
+      ctx.fillStyle = '#bfe6f2';
+      ctx.beginPath();
+      ctx.moveTo(o.x + o.w / 2, o.y);
+      ctx.lineTo(o.x + o.w, o.y + o.h * 0.5);
+      ctx.lineTo(o.x + o.w * 0.7, o.y + o.h);
+      ctx.lineTo(o.x + o.w * 0.3, o.y + o.h);
+      ctx.lineTo(o.x, o.y + o.h * 0.55);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawPineStump(o) {
+      ctx.save();
+      ctx.fillStyle = '#6b4a30';
+      ctx.fillRect(o.x + o.w * 0.25, o.y + o.h * 0.4, o.w * 0.5, o.h * 0.6);
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2, o.y + o.h * 0.4, o.w * 0.32, o.h * 0.18, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawCloud(o) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      [[-12,0,10],[0,-5,13],[12,0,10],[0,5,11]].forEach(p => {
+        ctx.beginPath();
+        ctx.arc(o.x + o.w / 2 + p[0], o.y + o.h / 2 + p[1], p[2], 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function drawBranch(o) {
+      ctx.save();
+      ctx.strokeStyle = '#6b4a30';
+      ctx.lineWidth = 6;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(o.x, o.y + o.h);
+      ctx.quadraticCurveTo(o.x + o.w * 0.5, o.y, o.x + o.w, o.y + o.h * 0.6);
+      ctx.stroke();
+      ctx.fillStyle = '#5e8a4a';
+      ctx.beginPath(); ctx.arc(o.x + o.w * 0.3, o.y + o.h * 0.5, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(o.x + o.w * 0.6, o.y + o.h * 0.2, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+
+    function drawKite(o) {
+      ctx.save();
+      const cx = o.x + o.w / 2, cy = o.y + o.h / 2;
+      ctx.fillStyle = '#e8906a';
+      ctx.beginPath();
+      ctx.moveTo(cx, o.y);
+      ctx.lineTo(o.x + o.w, cy);
+      ctx.lineTo(cx, o.y + o.h);
+      ctx.lineTo(o.x, cy);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#c97080';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+      ctx.beginPath();
+      ctx.moveTo(cx, o.y + o.h);
+      ctx.lineTo(cx, o.y + o.h + 10);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawBackground() {
+      const level = LEVELS[levelIdx];
+      ctx.fillStyle = level.floor;
+      ctx.fillRect(0, groundY + fish.h * 0.5 + 6, W, H - (groundY + fish.h * 0.5 + 6));
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < W; i += 26) {
+        ctx.beginPath();
+        ctx.moveTo(i, groundY + fish.h * 0.5 + 10 + Math.sin(i) * 2);
+        ctx.lineTo(i + 14, groundY + fish.h * 0.5 + 6);
+        ctx.stroke();
+      }
+      bubbles.forEach(b => {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      });
+    }
+
+    function update() {
+      frame++;
+      fish.tailPhase += 0.25;
+
+      if (frame % 14 === 0) spawnBubble();
+      bubbles.forEach(b => { b.y -= b.vy; b.x += b.drift; });
+      bubbles = bubbles.filter(b => b.y > -10);
+
+      if (levelBannerTimer > 0) levelBannerTimer--;
+
+      if (running && !gameOver) {
+        if (fish.jumping) {
+          fish.vy += fish.gravity;
+          fish.y += fish.vy;
+          if (fish.y >= fish.baseY) {
+            fish.y = fish.baseY;
+            fish.vy = 0;
+            fish.jumping = false;
+          }
+        }
+
+        const level = LEVELS[levelIdx];
+        if (frame % Math.max(28, Math.floor(level.spawnBase - speed * 2)) === 0) spawnObstacle();
+        obstacles.forEach(o => { o.x -= speed; });
+        obstacles = obstacles.filter(o => o.x > -60);
+
+        const fishBox = { x: fish.x - fish.w * 0.35, y: fish.y - fish.h * 0.5, w: fish.w * 0.7, h: fish.h * 0.9 };
+        obstacles.forEach(o => {
+          if (!o.passed && o.x + o.w < fish.x) { o.passed = true; score++; }
+          const obox = { x: o.x, y: o.y, w: o.w, h: o.h };
+          if (rectsOverlap(fishBox, obox)) {
+            gameOver = true;
+            running = false;
+            if (score > bestScore) bestScore = score;
+          }
+        });
+
+        const newLevelIdx = levelIndexForScore(score);
+        if (newLevelIdx !== levelIdx) {
+          levelIdx = newLevelIdx;
+          speed = LEVELS[levelIdx].speed;
+          setLevelVisuals(levelIdx);
+          levelBannerTimer = 80;
+        } else {
+          speed += 0.0028;
+        }
+
+        document.getElementById('fish-score').textContent = String(score);
+        document.getElementById('fish-best').textContent = String(bestScore);
+        document.getElementById('fish-level').textContent = String(levelIdx + 1);
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      drawBackground();
+      obstacles.forEach(drawObstacle);
+      drawCharacter(fish.x, fish.y);
+
+      ctx.strokeStyle = 'rgba(90,90,90,0.25)';
+      ctx.beginPath();
+      ctx.moveTo(0, groundY + fish.h * 0.5 + 6);
+      ctx.lineTo(W, groundY + fish.h * 0.5 + 6);
+      ctx.stroke();
+
+      if (!started) {
+        ctx.fillStyle = 'rgba(90,58,58,0.78)';
+        ctx.font = '600 22px Lato, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Tap or press Space to start your journey!', W / 2, H / 2);
+      } else if (gameOver) {
+        ctx.fillStyle = 'rgba(90,58,58,0.82)';
+        ctx.font = '600 24px Lato, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Oh no! Tap or press Space to try again', W / 2, H / 2);
+      } else if (levelBannerTimer > 0) {
+        const alpha = Math.min(1, levelBannerTimer / 20);
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = 'rgba(90,58,58,0.85)';
+        ctx.font = '700 26px Cormorant Garant, serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(LEVELS[levelIdx].name, W / 2, 50);
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    setLevelVisuals(0);
+    draw();
+    loop();
+  }
+
+</script>
+</body>
+</html>
